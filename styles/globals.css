@@ -1,2 +1,5 @@
-html, body { margin: 0; padding: 0; background: #0a0a0a; color: #fff; font-family: system-ui, Arial, sans-serif; }
-a { color: #FFD700; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
