@@ -15,4 +15,93 @@ export default function EN() {
           <div className="mt-8 flex flex-wrap gap-4 justify-center">
             <a
               className="px-4 py-2 rounded-lg bg-gold text-black font-medium"
-              href={`https://bscscan.com/address/${CONTRACT
+              href={`https://bscscan.com/address/${CONTRACT}`} target="_blank"
+              rel="noreferrer"
+            >
+              View on BscScan
+            </a>
+            <a
+              className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10"
+              href={`https://bscscan.com/address/${STAKING}`} target="_blank"
+              rel="noreferrer"
+            >
+              Access Staking
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* PROOF OF LIGHT */}
+      <section id="concept" className="border-t border-white/10 pt-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <h3 className="text-2xl md:text-3xl font-semibold">Proof of Light</h3>
+          <p className="mt-3 text-white/75">
+            Unlike classical mining, NOOR rewards transparency and positive actions.
+            Earn NUR through staking and community missions.
+          </p>
+        </div>
+      </section>
+
+      {/* TOKENOMICS */}
+      <section id="tokenomics" className="border-t border-white/10 pt-12">
+        <div className="max-w-6xl mx-auto">
+          <h3 className="text-2xl md:text-3xl font-semibold text-center">Tokenomics</h3>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Info label="Network" value="BNB Smart Chain (56)" />
+            <Info label="Standard" value="BEP-20 (ERC-20 compatible)" />
+            <Info label="Symbol" value="NUR" />
+            <Info label="Total Supply" value="299,792,458 NUR (fixed)" />
+            <InfoLink label="Contract" value={CONTRACT} href={`https://bscscan.com/address/${CONTRACT}`} />
+            <InfoLink label="Staking" value={STAKING} href={`https://bscscan.com/address/${STAKING}`} />
+          </div>
+        </div>
+      </section>
+
+      {/* ROADMAP */}
+      <section id="roadmap" className="border-t border-white/10 pt-12">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-2xl md:text-3xl font-semibold text-center">Roadmap</h3>
+          <ul className="mt-6 space-y-3 text-white/85">
+            <li>✓ Token deployed & verified on BSC</li>
+            <li>✓ Staking live (10% / 30 days)</li>
+            <li>→ Official website (this)</li>
+            <li>→ Liquidity on PancakeSwap (NUR/BNB then NUR/USDT)</li>
+            <li>→ Whitepaper & GitHub docs</li>
+            <li>→ Community & listings</li>
+          </ul>
+        </div>
+      </section>
+
+      {/* DOCS */}
+      <section id="docs" className="border-t border-white/10 pt-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <h3 className="text-2xl md:text-3xl font-semibold">Docs & Whitepaper</h3>
+          <div className="mt-4 flex gap-3 justify-center">
+            <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/docs/whitepaper.pdf">
+              Whitepaper (soon)
+            </a>
+            <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="https://github.com" target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function short(a){ return `${a.slice(0,6)}…${a.slice(-4)}`; }
+function Box({children}){ return <div className="p-4 rounded-xl border border-white/10 hover:border-white/20">{children}</div>; }
+function Info({label, value}) {
+  return <Box><div className="text-xs uppercase tracking-wide text-white/50">{label}</div><div className="mt-1 text-lg">{value}</div></Box>;
+}
+function InfoLink({label, value, href}) {
+  return (
+    <a className="block" href={href} target="_blank" rel="noreferrer">
+      <Box>
+        <div className="text-xs uppercase tracking-wide text-white/50">{label}</div>
+        <div className="mt-1 text-lg">{short(value)}</div>
+      </Box>
+    </a>
+  );
+}
