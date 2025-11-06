@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="38%" r="60%">
+      <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#0A0A0A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Fond noir + halo doré -->
+  <rect width="1200" height="630" fill="#0A0A0A"/>
+  <rect width="1200" height="630" fill="url(#halo)"/>
+
+  <!-- Cadre subtil -->
+  <rect x="24" y="24" width="1152" height="582" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+
+  <!-- Titre -->
+  <text x="600" y="270" text-anchor="middle"
+        font-family="Inter, Arial, Helvetica, sans-serif"
+        font-size="72" font-weight="700" fill="#FFFFFF" letter-spacing="1">
+    NOOR (NUR)
+  </text>
+
+  <!-- Baseline -->
+  <text x="600" y="340" text-anchor="middle"
+        font-family="Inter, Arial, Helvetica, sans-serif"
+        font-size="40" font-weight="600" fill="#D4AF37" letter-spacing="0.5">
+    Proof of Light — Swiss Ethical Token
+  </text>
+
+  <!-- Sous-texte -->
+  <text x="600" y="400" text-anchor="middle"
+        font-family="Inter, Arial, Helvetica, sans-serif"
+        font-size="26" font-weight="400" fill="rgba(255,255,255,0.8)">
+    Utility + Payment · BNB Smart Chain · Non-custodial · No fiat
+  </text>
+</svg>
