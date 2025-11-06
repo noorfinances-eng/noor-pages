@@ -57,13 +57,18 @@ export default function EN() {
           </div>
         </section>
 
-        {/* PROOF OF LIGHT */}
-        <section id="concept" className="border-t border-white/10 pt-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl md:text-3xl font-semibold">Proof of Light</h3>
-            <p className="mt-3 text-white/75">
-              Unlike classical mining, NOOR rewards transparency and positive actions.
-              Earn NUR through staking and community missions.
+        {/* PROOF OF LIGHT (manifeste) */}
+        <section id="proof" className="border-t border-white/10 pt-12">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <h3 className="text-2xl md:text-3xl font-semibold text-gold">Proof of Light</h3>
+            <p className="text-white/80 leading-relaxed">
+              <strong>Proof of Light</strong> is a philosophy before being a technology.
+              NOOR rewards transparent actions, trust and clarity.
+              No mining, no blind speculation — only conscious participation.
+            </p>
+            <p className="text-white/70">
+              Every NUR holder embodies light — ethics, sharing and transparency.
+              Rewards are symbolic, tied to engagement rather than mere possession.
             </p>
           </div>
         </section>
@@ -95,6 +100,24 @@ export default function EN() {
               <li>→ Whitepaper & GitHub docs</li>
               <li>→ Community & listings</li>
             </ul>
+          </div>
+        </section>
+
+        {/* LEGAL LIGHT (mentions simples) */}
+        <section id="legal" className="border-t border-white/10 pt-12">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <h3 className="text-2xl md:text-3xl font-semibold text-gold">Legal Light</h3>
+            <p className="text-white/75">
+              NOOR (NUR) is a Swiss <strong>Utility & Payment Token</strong>.  
+              It is not a security and does not represent any promise of returns.
+            </p>
+            <p className="text-white/60">
+              No fiat is accepted, and no custody of third-party funds is performed.  
+              All payments are crypto-to-crypto directly between users.
+            </p>
+            <p className="text-white/50 text-sm italic">
+              In line with Swiss guidance, NOOR remains a non-custodial, purely utilitarian project.
+            </p>
           </div>
         </section>
 
