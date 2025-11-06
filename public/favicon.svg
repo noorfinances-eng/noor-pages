@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond noir -->
+  <rect width="512" height="512" fill="#0A0A0A"/>
+  <!-- Halo doux -->
+  <radialGradient id="g" cx="50%" cy="38%" r="60%">
+    <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.35"/>
+    <stop offset="100%" stop-color="#0A0A0A" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="512" height="512" fill="url(#g)"/>
+  <!-- Texte NUR (Inter Bold-like) -->
+  <g transform="translate(256,278)">
+    <text x="0" y="0" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif"
+          font-size="180" font-weight="700" fill="#D4AF37" letter-spacing="2">
+      NUR
+    </text>
+  </g>
+</svg>
