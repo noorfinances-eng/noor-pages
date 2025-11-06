@@ -57,7 +57,7 @@ export default function EN() {
           </div>
         </section>
 
-        {/* PROOF OF LIGHT (manifeste) */}
+        {/* PROOF OF LIGHT */}
         <section id="proof" className="border-t border-white/10 pt-12">
           <div className="max-w-4xl mx-auto text-center space-y-4">
             <h3 className="text-2xl md:text-3xl font-semibold text-gold">Proof of Light</h3>
@@ -103,16 +103,16 @@ export default function EN() {
           </div>
         </section>
 
-        {/* LEGAL LIGHT (mentions simples) */}
+        {/* LEGAL LIGHT */}
         <section id="legal" className="border-t border-white/10 pt-12">
           <div className="max-w-4xl mx-auto text-center space-y-4">
             <h3 className="text-2xl md:text-3xl font-semibold text-gold">Legal Light</h3>
             <p className="text-white/75">
-              NOOR (NUR) is a Swiss <strong>Utility & Payment Token</strong>.  
+              NOOR (NUR) is a Swiss <strong>Utility & Payment Token</strong>.
               It is not a security and does not represent any promise of returns.
             </p>
             <p className="text-white/60">
-              No fiat is accepted, and no custody of third-party funds is performed.  
+              No fiat is accepted, and no custody of third-party funds is performed.
               All payments are crypto-to-crypto directly between users.
             </p>
             <p className="text-white/50 text-sm italic">
