@@ -35,22 +35,12 @@ export default function FR() {
               NUR récompense la participation, la clarté et la confiance. Pas de minage — seulement la lumière.
             </p>
             <div className="mt-8 flex flex-wrap gap-4 justify-center">
-              <a
-                className="px-4 py-2 rounded-lg bg-gold text-black font-medium"
-                href={`https://bscscan.com/address/${CONTRACT}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Voir le contrat NOOR sur BscScan"
-              >
+              <a className="px-4 py-2 rounded-lg bg-gold text-black font-medium"
+                 href={`https://bscscan.com/address/${CONTRACT}`} target="_blank" rel="noreferrer">
                 Voir sur BscScan
               </a>
-              <a
-                className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10"
-                href={`https://bscscan.com/address/${STAKING}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Ouvrir le contrat de Staking NOOR sur BscScan"
-              >
+              <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10"
+                 href={`https://bscscan.com/address/${STAKING}`} target="_blank" rel="noreferrer">
                 Accéder au Staking
               </a>
             </div>
@@ -58,12 +48,17 @@ export default function FR() {
         </section>
 
         {/* PROOF OF LIGHT */}
-        <section id="concept" className="border-t border-white/10 pt-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl md:text-3xl font-semibold">Proof of Light</h3>
-            <p className="mt-3 text-white/75">
-              Contrairement au minage classique, NOOR récompense la transparence et les actions positives.
-              Gagnez des NUR via le staking et des missions communautaires.
+        <section id="proof" className="border-t border-white/10 pt-12">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <h3 className="text-2xl md:text-3xl font-semibold text-gold">Proof of Light</h3>
+            <p className="text-white/80 leading-relaxed">
+              Le <strong>Proof of Light</strong> est une philosophie avant d’être une technologie.
+              NOOR récompense les actions transparentes, la confiance et la clarté.
+              Pas de minage, pas de spéculation aveugle : seulement la participation consciente.
+            </p>
+            <p className="text-white/70">
+              Chaque détenteur de NUR incarne la lumière — celle de l’éthique, du partage et de la transparence.
+              Les récompenses sont symboliques, liées à l’engagement et non à la possession.
             </p>
           </div>
         </section>
@@ -98,25 +93,33 @@ export default function FR() {
           </div>
         </section>
 
+        {/* LEGAL LIGHT */}
+        <section id="legal" className="border-t border-white/10 pt-12">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <h3 className="text-2xl md:text-3xl font-semibold text-gold">Mentions simples</h3>
+            <p className="text-white/75">
+              NOOR (NUR) est un <strong>Utility & Payment Token</strong> développé en Suisse.  
+              Il ne représente ni un titre financier, ni une promesse de rendement.
+            </p>
+            <p className="text-white/60">
+              Aucun fiat n’est accepté, aucune garde de fonds d’autrui n’est effectuée.  
+              Tous les paiements sont réalisés en crypto, directement entre utilisateurs.
+            </p>
+            <p className="text-white/50 text-sm italic">
+              Conformément aux lignes directrices de la FINMA, NOOR reste un projet non-custodial et purement utilitaire.
+            </p>
+          </div>
+        </section>
+
         {/* DOCS */}
         <section id="docs" className="border-t border-white/10 pt-12">
           <div className="max-w-4xl mx-auto text-center">
             <h3 className="text-2xl md:text-3xl font-semibold">Docs & Whitepaper</h3>
             <div className="mt-4 flex gap-3 justify-center">
-              <a
-                className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10"
-                href="/docs/whitepaper.pdf"
-                aria-label="Ouvrir le whitepaper NOOR (bientôt)"
-              >
+              <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/docs/whitepaper.pdf">
                 Whitepaper (bientôt)
               </a>
-              <a
-                className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10"
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Ouvrir le GitHub NOOR"
-              >
+              <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="https://github.com" target="_blank" rel="noreferrer">
                 GitHub
               </a>
             </div>
@@ -127,24 +130,15 @@ export default function FR() {
   );
 }
 
-/* Helpers & UI */
+/* Helpers */
 function short(a){ return `${a.slice(0,6)}…${a.slice(-4)}`; }
 function Box({children}){ return <div className="p-4 rounded-xl border border-white/10 hover:border-white/20">{children}</div>; }
 function Info({label, value}) {
-  return (
-    <Box>
-      <div className="text-xs uppercase tracking-wide text-white/50">{label}</div>
-      <div className="mt-1 text-lg">{value}</div>
-    </Box>
-  );
+  return <Box><div className="text-xs uppercase tracking-wide text-white/50">{label}</div><div className="mt-1 text-lg">{value}</div></Box>;
 }
 function InfoLink({label, value, href}) {
   return (
-    <a className="block" href={href} target="_blank" rel="noopener noreferrer">
+    <a className="block" href={href} target="_blank" rel="noreferrer">
       <Box>
         <div className="text-xs uppercase tracking-wide text-white/50">{label}</div>
-        <div className="mt-1 text-lg">{short(value)}</div>
-      </Box>
-    </a>
-  );
-}
+        <div className="mt-1 text-lg">{short(value)}</
