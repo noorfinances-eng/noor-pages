@@ -11,8 +11,33 @@ export default function MyApp({ Component, pageProps }) {
           name="description"
           content="NOOR (NUR) — Swiss ethical token built on BNB Smart Chain. Proof of Light: transparency, ethics and clarity in crypto."
         />
-        <link rel="icon" href="/favicon.svg" />
+
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.svg?v=1" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="mask-icon" href="/favicon.svg?v=1" color="#D4AF37" />
         <meta name="theme-color" content="#0A0A0A" />
+
+        {/* Open Graph (partage) */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="NOOR — Proof of Light" />
+        <meta
+          property="og:description"
+          content="Swiss transparent token for ethical payments — Utility + Payment on BNB Smart Chain. Non-custodial, no fiat."
+        />
+        <meta property="og:image" content="/og-noor.svg?v=1" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="NOOR — Proof of Light" />
+        <meta
+          name="twitter:description"
+          content="Swiss ethical Utility + Payment token. Transparency first."
+        />
+        <meta name="twitter:image" content="/og-noor.svg?v=1" />
       </Head>
 
       {/* HEADER */}
@@ -30,7 +55,7 @@ export default function MyApp({ Component, pageProps }) {
         </div>
       </header>
 
-      {/* CONTENU PRINCIPAL */}
+      {/* CONTENU */}
       <main className="max-w-6xl mx-auto px-4 py-10">
         <Component {...pageProps} />
       </main>
