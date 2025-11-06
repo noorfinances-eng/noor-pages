@@ -10,7 +10,7 @@ export default function DE() {
         <title>NOOR (NUR) — Das Licht der Transparenz in Krypto</title>
         <meta
           name="description"
-          content="NOOR (NUR) ist ein schweizerischer, ethischer Utility- und Payment-Token auf der BNB Smart Chain. Proof of Light: transparent, non-custodial, kein Fiat, keine Renditeversprechen."
+          content="NOOR (NUR) ist ein Schweizer, ethischer Utility- und Payment-Token auf der BNB Smart Chain. Proof of Light: transparent, non-custodial, kein Fiat, keine Renditeversprechen."
         />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="NOOR — Proof of Light" />
@@ -57,13 +57,18 @@ export default function DE() {
           </div>
         </section>
 
-        {/* PROOF OF LIGHT */}
-        <section id="concept" className="border-t border-white/10 pt-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl md:text-3xl font-semibold">Proof of Light</h3>
-            <p className="mt-3 text-white/75">
-              Anders als klassisches Mining belohnt NOOR Transparenz und positive Beiträge.
-              Verdienen Sie NUR über Staking und Community-Missionen.
+        {/* PROOF OF LIGHT (Manifest) */}
+        <section id="proof" className="border-t border-white/10 pt-12">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <h3 className="text-2xl md:text-3xl font-semibold text-gold">Proof of Light</h3>
+            <p className="text-white/80 leading-relaxed">
+              <strong>Proof of Light</strong> ist eine Philosophie, bevor es eine Technik ist.
+              NOOR belohnt transparente Handlungen, Vertrauen und Klarheit.
+              Kein Mining, keine blinde Spekulation — nur bewusste Teilnahme.
+            </p>
+            <p className="text-white/70">
+              Jede/r NUR-Inhaber/in verkörpert Licht — Ethik, Teilen und Transparenz.
+              Belohnungen sind symbolisch und an Engagement statt an blosse Besitzmenge geknüpft.
             </p>
           </div>
         </section>
@@ -83,7 +88,7 @@ export default function DE() {
           </div>
         </section>
 
-        {/* ROADMAP */}
+        {/* FAHRPLAN */}
         <section id="roadmap" className="border-t border-white/10 pt-12">
           <div className="max-w-4xl mx-auto">
             <h3 className="text-2xl md:text-3xl font-semibold text-center">Fahrplan</h3>
@@ -95,6 +100,24 @@ export default function DE() {
               <li>→ Whitepaper & GitHub-Dokumente</li>
               <li>→ Community & Listings</li>
             </ul>
+          </div>
+        </section>
+
+        {/* LEGAL LIGHT (einfache Hinweise) */}
+        <section id="legal" className="border-t border-white/10 pt-12">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <h3 className="text-2xl md:text-3xl font-semibold text-gold">Einfache Hinweise</h3>
+            <p className="text-white/75">
+              NOOR (NUR) ist ein Schweizer <strong>Utility- & Payment-Token</strong>.
+              Es ist kein Wertpapier und stellt kein Renditeversprechen dar.
+            </p>
+            <p className="text-white/60">
+              Es wird kein Fiat akzeptiert und keine Verwahrung von Drittmitteln vorgenommen.
+              Alle Zahlungen erfolgen Krypto-zu-Krypto direkt zwischen Nutzern.
+            </p>
+            <p className="text-white/50 text-sm italic">
+              Im Einklang mit schweizerischen Leitlinien bleibt NOOR ein non-custodial, rein utilitäres Projekt.
+            </p>
           </div>
         </section>
 
