@@ -2,7 +2,8 @@ import Head from "next/head";
 
 export default function EN() {
   const CONTRACT = "0xA20212290866C8A804a89218c8572F28C507b401";
-  const STAKING  = "0x6CB5CBEc7F0c5870781eA467244Ed31e2Ea3c702";
+  const STAKING  = "0x4eBAbfb635A865EEA2a5304E1444B125aE223f70";
+  const STAKING_LEGACY = "0x6CB5CBEc7F0c5870781eA467244Ed31e2Ea3c702";
 
   return (
     <>
@@ -49,11 +50,14 @@ export default function EN() {
                 href={`https://bscscan.com/address/${STAKING}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Open NOOR staking contract on BscScan"
+                aria-label="Open NOOR staking contract (V3) on BscScan"
               >
-                Access Staking
+                Access Staking (V3)
               </a>
             </div>
+            <p className="text-xs text-white/40 mt-2">
+              Legacy V2 → {short(STAKING_LEGACY)}
+            </p>
           </div>
         </section>
 
@@ -83,7 +87,7 @@ export default function EN() {
               <Info label="Symbol" value="NUR" />
               <Info label="Total Supply" value="299,792,458 NUR (fixed)" />
               <InfoLink label="Contract" value={CONTRACT} href={`https://bscscan.com/address/${CONTRACT}`} />
-              <InfoLink label="Staking" value={STAKING} href={`https://bscscan.com/address/${STAKING}`} />
+              <InfoLink label="Staking (V3)" value={STAKING} href={`https://bscscan.com/address/${STAKING}`} />
             </div>
           </div>
         </section>
