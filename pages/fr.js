@@ -2,7 +2,8 @@ import Head from "next/head";
 
 export default function FR() {
   const CONTRACT = "0xA20212290866C8A804a89218c8572F28C507b401";
-  const STAKING  = "0x6CB5CBEc7F0c5870781eA467244Ed31e2Ea3c702";
+  const STAKING  = "0x4eBAbfb635A865EEA2a5304E1444B125aE223f70";
+  const STAKING_LEGACY = "0x6CB5CBEc7F0c5870781eA467244Ed31e2Ea3c702";
 
   return (
     <>
@@ -49,11 +50,14 @@ export default function FR() {
                 href={`https://bscscan.com/address/${STAKING}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Ouvrir le contrat de Staking NOOR sur BscScan"
+                aria-label="Ouvrir le contrat de Staking NOOR (V3) sur BscScan"
               >
-                Accéder au Staking
+                Accéder au Staking (V3)
               </a>
             </div>
+            <p className="text-xs text-white/40 mt-2">
+              Legacy V2 → {short(STAKING_LEGACY)}
+            </p>
           </div>
         </section>
 
@@ -83,7 +87,7 @@ export default function FR() {
               <Info label="Symbole" value="NUR" />
               <Info label="Quantité totale" value="299 792 458 NUR (fixe)" />
               <InfoLink label="Contrat" value={CONTRACT} href={`https://bscscan.com/address/${CONTRACT}`} />
-              <InfoLink label="Staking" value={STAKING} href={`https://bscscan.com/address/${STAKING}`} />
+              <InfoLink label="Staking (V3)" value={STAKING} href={`https://bscscan.com/address/${STAKING}`} />
             </div>
           </div>
         </section>
@@ -123,7 +127,7 @@ export default function FR() {
 
         {/* DOCS */}
         <section id="docs" className="border-t border-white/10 pt-12">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-4xl mx_auto text-center">
             <h3 className="text-2xl md:text-3xl font-semibold">Docs & Whitepaper</h3>
             <div className="mt-4 flex gap-3 justify-center">
               <a
