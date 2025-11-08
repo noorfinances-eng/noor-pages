@@ -5,34 +5,22 @@ const NUR_CONTRACT = "0xA20212290866C8A804a89218c8572F28C507b401";
 const BSC_CHAIN_ID_DEC = 56;
 
 export default function AcceptNoor({
-  to,                 // adresse BSC du marchand (obligatoire)
-  amount = "",        // montant en NUR (optionnel)
-  label = "Pay with NOOR", // texte du bouton
-  note = "",          // note courte (optionnel, ex: "Invoice #123")
-  lang = "en",        // "en" | "fr" | "de"
+  to,
+  amount = "",
+  label = "Pay with NOOR",
+  note = "",
+  lang = "en",
   mode = "link",      // "link" | "universal" | "eip681"
-  compact = false     // true = style compact
+  compact = false
 }) {
   const [baseUrl, setBaseUrl] = useState("");
   const canvasRef = useRef(null);
 
   const t = (k) => {
     const dict = {
-      en: {
-        title: "Accept NOOR",
-        hint: "Scan to pay in NUR",
-        btn: label || "Pay with NOOR",
-      },
-      fr: {
-        title: "Accepter NOOR",
-        hint: "Scannez pour payer en NUR",
-        btn: label || "Payer avec NOOR",
-      },
-      de: {
-        title: "NOOR akzeptieren",
-        hint: "Zum Bezahlen in NUR scannen",
-        btn: label || "Mit NOOR zahlen",
-      }
+      en: { title: "Accept NOOR", hint: "Scan to pay in NUR", btn: label || "Pay with NOOR" },
+      fr: { title: "Accepter NOOR", hint: "Scannez pour payer en NUR", btn: label || "Payer avec NOOR" },
+      de: { title: "NOOR akzeptieren", hint: "Zum Bezahlen in NUR scannen", btn: label || "Mit NOOR zahlen" }
     };
     return (dict[lang] || dict.en)[k];
   };
@@ -42,12 +30,11 @@ export default function AcceptNoor({
     setBaseUrl(window.location.origin);
   }, []);
 
-  // simple 18-decimals toWei sans lib
   const toWei = (numString) => {
     if (!numString || isNaN(Number(numString))) return "0";
-    const [intPart, fracPart = ""] = String(numString).split(".");
-    const frac = (fracPart + "000000000000000000").slice(0, 18);
-    const joined = (intPart || "0") + frac;
+    const [i, f = ""] = String(numString).split(".");
+    const frac = (f + "000000000000000000").slice(0, 18);
+    const joined = (i || "0") + frac;
     return joined.replace(/^0+(?=\d)/, "") || "0";
   };
 
@@ -67,15 +54,15 @@ export default function AcceptNoor({
     return `ethereum:${NUR_CONTRACT}/transfer?address=${to.trim()}&uint256=${wei}&chain_id=${BSC_CHAIN_ID_DEC}`;
   }, [to, amount]);
 
+  // ✅ Adresse pure
   const universalPayload = useMemo(() => {
-    const meta = { chainId: BSC_CHAIN_ID_DEC, recipient: (to || "").trim(), hint: { token: NUR_CONTRACT, amountNUR: amount || "", note } };
     const addr = (to || "").trim();
-    return (addr ? addr : "NOOR") + "\nMETA:" + JSON.stringify(meta);
-  }, [to, amount, note]);
+    return addr || "0x0000000000000000000000000000000000000000";
+  }, [to]);
 
   const qrContent = useMemo(() => {
     if (mode === "eip681") return eip681 || "NOOR";
-    if (mode === "universal") return universalPayload || "NOOR";
+    if (mode === "universal") return universalPayload;
     return payLink || "NOOR";
   }, [mode, eip681, universalPayload, payLink]);
 
@@ -87,7 +74,7 @@ export default function AcceptNoor({
         const QR = await import("qrcode");
         if (!mounted) return;
         await QR.toCanvas(canvasRef.current, qrContent, { errorCorrectionLevel: "M", margin: 1, scale: compact ? 4 : 6 });
-      } catch {/* ignore */}
+      } catch {}
     })();
     return () => { mounted = false; };
   }, [qrContent, compact]);
@@ -105,7 +92,7 @@ export default function AcceptNoor({
             <div>To: <span className="font-mono">{short(to)}</span></div>
             <div>Amount: <span className="font-mono">{amount || "—"} NUR</span></div>
           </div>
-          <a href={payLink || "#"} className="inline-block mt-3 px-3 py-2 rounded-lg bg-gold text-black font-medium disabled:opacity-50"
+          <a href={payLink || "#"} className="inline-block mt-3 px-3 py-2 rounded-lg bg-gold text-black font-medium"
              onClick={(e) => { if (!payLink) e.preventDefault(); }}>
             {t("btn")}
           </a>
