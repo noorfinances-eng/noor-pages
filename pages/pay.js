@@ -7,13 +7,11 @@ const BSC_CHAIN_ID_DEC = 56;
 const BSC_CHAIN_ID_HEX = "0x38";
 
 function PayInner() {
-  // Base URL + formulaire
   const [baseUrl, setBaseUrl] = useState("");
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
 
-  // Wallet state
   const [wallet, setWallet] = useState({
     connected: false,
     address: "",
@@ -26,15 +24,11 @@ function PayInner() {
   const [txStatus, setTxStatus] = useState("");
   const [errMsg, setErrMsg] = useState("");
 
-  // Type de QR
   const [qrMode, setQrMode] = useState("link"); // "link" | "universal" | "eip681"
-
-  // Canvas QR
   const canvasRef = useRef(null);
 
   const short = (a) => (!a ? "—" : `${a.slice(0, 6)}…${a.slice(-4)}`);
 
-  // Client only + préremplissage depuis ?to=&amount=
   useEffect(() => {
     if (typeof window === "undefined") return;
     setBaseUrl(window.location.origin);
@@ -45,16 +39,14 @@ function PayInner() {
     if (amt && !isNaN(Number(amt))) setAmount(amt);
   }, []);
 
-  // toWei (18 décimales) sans dépendance
   const toWei = (numString) => {
     if (!numString || isNaN(Number(numString))) return "0";
-    const [intPart, fracPart = ""] = String(numString).split(".");
-    const frac = (fracPart + "000000000000000000").slice(0, 18);
-    const joined = (intPart || "0") + frac;
+    const [i, f = ""] = String(numString).split(".");
+    const frac = (f + "000000000000000000").slice(0, 18);
+    const joined = (i || "0") + frac;
     return joined.replace(/^0+(?=\d)/, "") || "0";
   };
 
-  // EIP-681 (wallets compatibles)
   const eip681 = useMemo(() => {
     const to = (recipient || "").trim();
     if (!to || to.length !== 42 || !to.startsWith("0x")) return "";
@@ -62,14 +54,12 @@ function PayInner() {
     return `ethereum:${NUR_CONTRACT}/transfer?address=${to}&uint256=${wei}&chain_id=${BSC_CHAIN_ID_DEC}`;
   }, [recipient, amount]);
 
-  // QR universel (adresse seule)
+  // ✅ Adresse pure (compat max wallets)
   const universalPayload = useMemo(() => {
-    const meta = { chainId: BSC_CHAIN_ID_DEC, recipient: (recipient || "").trim(), hint: { token: NUR_CONTRACT, amountNUR: amount || "", note } };
     const addr = (recipient || "").trim();
-    return (addr ? addr : "NOOR") + "\nMETA:" + JSON.stringify(meta);
-  }, [recipient, amount, note]);
+    return addr || "0x0000000000000000000000000000000000000000";
+  }, [recipient]);
 
-  // Lien partageable → ouvre /pay pré-remplie
   const shareLink = useMemo(() => {
     if (!baseUrl) return "";
     const to = (recipient || "").trim();
@@ -81,14 +71,12 @@ function PayInner() {
     return u.toString();
   }, [baseUrl, recipient, amount]);
 
-  // Contenu QR selon mode
   const qrContent = useMemo(() => {
     if (qrMode === "eip681") return eip681 || "NOOR";
-    if (qrMode === "universal") return universalPayload || "NOOR";
+    if (qrMode === "universal") return universalPayload;
     return shareLink || "NOOR";
   }, [qrMode, eip681, universalPayload, shareLink]);
 
-  // Dessin du QR (client-only import "qrcode")
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -97,17 +85,15 @@ function PayInner() {
         const QR = await import("qrcode");
         if (!mounted) return;
         await QR.toCanvas(canvasRef.current, qrContent, { errorCorrectionLevel: "M", margin: 2, scale: 6 });
-      } catch {/* ignore */}
+      } catch {}
     })();
     return () => { mounted = false; };
   }, [qrContent]);
 
-  // -------- Helpers provider & réseau --------
   const getInjectedEthereum = () => {
     if (typeof window === "undefined") return null;
     const eth = window.ethereum;
     if (!eth) return null;
-    // Si plusieurs providers (Rabby + MetaMask, etc.)
     if (eth.providers?.length) {
       const mm = eth.providers.find((p) => p.isMetaMask);
       if (mm) return mm;
@@ -142,13 +128,11 @@ function PayInner() {
 
   const openInMetaMaskMobile = () => {
     if (typeof window === "undefined") return;
-    // Deep-link MetaMask mobile vers cette page (avec query params)
-    const url = window.location.href; // /pay déjà avec to/amount si pré-remplis
-    const mm = `metamask://dapp/${window.location.host}${new URL(url).pathname}${new URL(url).search}`;
+    const u = new URL(window.location.href);
+    const mm = `metamask://dapp/${window.location.host}${u.pathname}${u.search}`;
     window.location.href = mm;
   };
 
-  // -------- Connexion & envoi --------
   const connectInjected = async () => {
     setErrMsg("");
     try {
@@ -163,7 +147,6 @@ function PayInner() {
       const provider = new BrowserProvider(eth);
       const [address] = await eth.request({ method: "eth_requestAccounts" });
 
-      // Soldes
       const bnbWei = await provider.getBalance(address);
       const bnbBal = Number(formatUnits(bnbWei, 18)).toFixed(6);
 
@@ -173,7 +156,7 @@ function PayInner() {
         "function symbol() view returns (string)"
       ];
       const nur = new Contract(NUR_CONTRACT, ERC20_ABI, provider);
-      const [dec, sym, balRaw] = await Promise.all([nur.decimals(), nur.symbol(), nur.balanceOf(address)]);
+      const [dec, sym, balRaw] = await Promise.all([ nur.decimals(), nur.symbol(), nur.balanceOf(address) ]);
       const nurBal = formatUnits(balRaw, dec);
 
       const chainIdHex = await eth.request({ method: "eth_chainId" });
@@ -202,7 +185,7 @@ function PayInner() {
         method: "wallet_watchAsset",
         params: { type: "ERC20", options: { address: NUR_CONTRACT, symbol: wallet.nurSymbol || "NUR", decimals: wallet.nurDecimals || 18 } }
       });
-    } catch {/* ignore */}
+    } catch {}
   };
 
   const sendNur = async () => {
@@ -240,11 +223,10 @@ function PayInner() {
 
   return (
     <div className="space-y-10">
-      {/* HERO */}
       <section className="text-center">
         <h2 className="text-4xl md:text-5xl font-semibold">Pay with NOOR</h2>
         <p className="mt-3 text-white/70 max-w-2xl mx-auto">
-          QR : <span className="text-gold font-medium">Lien (HTTPS)</span> • <span className="text-gold font-medium">Universel (adresse)</span> • <span className="text-gold font-medium">Avancé (EIP-681)</span>. Ou <span className="text-gold font-medium">envoi direct</span> via wallet connecté.
+          QR : <span className="text-gold font-medium">Lien (HTTPS)</span> • <span className="text-gold font-medium">Adresse pure (wallets)</span> • <span className="text-gold font-medium">EIP-681 (avancé)</span>. Ou <span className="text-gold font-medium">envoi direct</span> via wallet connecté.
         </p>
         <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
           <button onClick={connectInjected} className="px-4 py-2 rounded-lg bg-gold text-black font-medium">Connecter le wallet</button>
@@ -265,14 +247,12 @@ function PayInner() {
         )}
         {!wallet.connected && (
           <p className="text-xs text-white/50 mt-2">
-            Astuce : sur **mobile**, ouvre cette page dans le **navigateur interne** de MetaMask via le bouton ci-dessus.
+            Astuce : sur mobile, scanne le <strong>QR Adresse pure</strong> avec le scanner MetaMask, ou utilise le bouton MetaMask (mobile).
           </p>
         )}
       </section>
 
-      {/* FORM + QR + SEND */}
       <section className="grid gap-6 md:grid-cols-2">
-        {/* Formulaire */}
         <div className="p-5 rounded-xl border border-white/10">
           <h3 className="text-xl font-semibold">1) Paramètres</h3>
           <div className="mt-4 space-y-4">
@@ -295,23 +275,20 @@ function PayInner() {
           </div>
         </div>
 
-        {/* QR + Actions */}
         <div className="p-5 rounded-xl border border-white/10">
           <h3 className="text-xl font-semibold">2) QR ou envoi direct</h3>
-
-          {/* Switch QR */}
           <div className="mt-3 inline-flex rounded-lg border border-white/10 overflow-hidden">
             <button onClick={() => setQrMode("link")} className={`px-3 py-2 text-sm ${qrMode === "link" ? "bg-white/10" : "hover:bg-white/5"}`}>QR Lien (HTTPS)</button>
-            <button onClick={() => setQrMode("universal")} className={`px-3 py-2 text-sm ${qrMode === "universal" ? "bg-white/10" : "hover:bg-white/5"}`}>QR Universel (adresse)</button>
+            <button onClick={() => setQrMode("universal")} className={`px-3 py-2 text-sm ${qrMode === "universal" ? "bg-white/10" : "hover:bg-white/5"}`}>QR Adresse pure</button>
             <button onClick={() => setQrMode("eip681")} className={`px-3 py-2 text-sm ${qrMode === "eip681" ? "bg-white/10" : "hover:bg-white/5"}`}>QR Avancé (EIP-681)</button>
           </div>
 
           <div className="mt-4 flex flex-col items-center gap-4">
             <canvas ref={canvasRef} className="rounded-lg border border-white/10 bg-white p-2" />
             <div className="text-center text-sm text-white/60">
-              {qrMode === "link" && "Scanne avec l’appareil photo : ouvre cette page /pay pré-remplie (to/amount)."}
-              {qrMode === "universal" && "Scanne dans n’importe quel wallet : écran d’envoi vers l’adresse (choisir NUR + saisir le montant)."}
-              {qrMode === "eip681" && "Wallets compatibles uniquement : prépare un transfer() du token NUR (BSC #56)."}
+              {qrMode === "link" && "Scanne avec l’appareil photo natif : ouvre /pay pré-remplie (navigateur)."}
+              {qrMode === "universal" && "Scanne avec le QR scanner du wallet (MetaMask/Rabby) : adresse destinataire uniquement."}
+              {qrMode === "eip681" && "Wallets compatibles : prépare un transfer() du token NUR (BSC #56) avec montant."}
             </div>
           </div>
 
@@ -336,21 +313,10 @@ function PayInner() {
           </div>
         </div>
       </section>
-
-      {/* AIDE */}
-      <section className="border-t border-white/10 pt-8">
-        <h3 className="text-xl font-semibold mb-2">Conseils</h3>
-        <ul className="list-disc ml-5 space-y-2 text-white/75">
-          <li><strong>Desktop :</strong> installe/active l’extension MetaMask (ou Rabby). Si plusieurs wallets, ce site choisit automatiquement MetaMask.</li>
-          <li><strong>Mobile :</strong> ouvre cette page dans le navigateur in-app de MetaMask via le bouton “Ouvrir dans MetaMask (mobile)”.</li>
-          <li>Assure-toi d’avoir un peu de <strong>BNB</strong> pour les frais réseau.</li>
-        </ul>
-      </section>
     </div>
   );
 }
 
-// Désactive le SSR pour cette page
 function Pay() { return <PayInner />; }
 export default dynamic(() => Promise.resolve(Pay), { ssr: false });
 
