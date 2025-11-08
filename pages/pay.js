@@ -10,7 +10,7 @@ function PayInner() {
   // Base URL + formulaire
   const [baseUrl, setBaseUrl] = useState("");
   const [recipient, setRecipient] = useState("");
-  const [amount, setAmount] = useState(""); // NUR (décimales humaines)
+  const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
 
   // Wallet state
@@ -64,10 +64,10 @@ function PayInner() {
 
   // QR universel (adresse seule)
   const universalPayload = useMemo(() => {
-    const meta = { chainId: BSC_CHAIN_ID_DEC, recipient: (recipient || "").trim(), hint: { token: NUR_CONTRACT, amountNUR: amount || "" } };
+    const meta = { chainId: BSC_CHAIN_ID_DEC, recipient: (recipient || "").trim(), hint: { token: NUR_CONTRACT, amountNUR: amount || "", note } };
     const addr = (recipient || "").trim();
     return (addr ? addr : "NOOR") + "\nMETA:" + JSON.stringify(meta);
-  }, [recipient, amount]);
+  }, [recipient, amount, note]);
 
   // Lien partageable → ouvre /pay pré-remplie
   const shareLink = useMemo(() => {
@@ -85,10 +85,10 @@ function PayInner() {
   const qrContent = useMemo(() => {
     if (qrMode === "eip681") return eip681 || "NOOR";
     if (qrMode === "universal") return universalPayload || "NOOR";
-    return shareLink || "NOOR"; // "link" par défaut ; avant hydratation, c'est "NOOR"
+    return shareLink || "NOOR";
   }, [qrMode, eip681, universalPayload, shareLink]);
 
-  // Dessin du QR (client-only import de "qrcode")
+  // Dessin du QR (client-only import "qrcode")
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -102,7 +102,22 @@ function PayInner() {
     return () => { mounted = false; };
   }, [qrContent]);
 
-  // Helpers wallet
+  // -------- Helpers provider & réseau --------
+  const getInjectedEthereum = () => {
+    if (typeof window === "undefined") return null;
+    const eth = window.ethereum;
+    if (!eth) return null;
+    // Si plusieurs providers (Rabby + MetaMask, etc.)
+    if (eth.providers?.length) {
+      const mm = eth.providers.find((p) => p.isMetaMask);
+      if (mm) return mm;
+      const rabby = eth.providers.find((p) => p.isRabby);
+      if (rabby) return rabby;
+      return eth.providers[0];
+    }
+    return eth;
+  };
+
   const ensureBsc = async (eth) => {
     const cid = await eth.request({ method: "eth_chainId" });
     if (cid !== BSC_CHAIN_ID_HEX) {
@@ -125,21 +140,28 @@ function PayInner() {
     }
   };
 
-  // Connecter le wallet (import dynamique d’ethers pour lire les soldes)
+  const openInMetaMaskMobile = () => {
+    if (typeof window === "undefined") return;
+    // Deep-link MetaMask mobile vers cette page (avec query params)
+    const url = window.location.href; // /pay déjà avec to/amount si pré-remplis
+    const mm = `metamask://dapp/${window.location.host}${new URL(url).pathname}${new URL(url).search}`;
+    window.location.href = mm;
+  };
+
+  // -------- Connexion & envoi --------
   const connectInjected = async () => {
     setErrMsg("");
     try {
-      if (typeof window === "undefined" || !window.ethereum) {
-        setErrMsg("Aucun wallet détecté (MetaMask/Rabby).");
+      const eth = getInjectedEthereum();
+      if (!eth) {
+        setErrMsg("Aucun wallet détecté (MetaMask/Rabby). Sur mobile, ouvre cette page dans l’app MetaMask (bouton ci-dessous).");
         return;
       }
-      await ensureBsc(window.ethereum);
+      await ensureBsc(eth);
 
-      // Import dynamique d'ethers côté client
       const { BrowserProvider, formatUnits, Contract } = await import("ethers");
-
-      const provider = new BrowserProvider(window.ethereum);
-      const [address] = await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new BrowserProvider(eth);
+      const [address] = await eth.request({ method: "eth_requestAccounts" });
 
       // Soldes
       const bnbWei = await provider.getBalance(address);
@@ -151,10 +173,10 @@ function PayInner() {
         "function symbol() view returns (string)"
       ];
       const nur = new Contract(NUR_CONTRACT, ERC20_ABI, provider);
-      const [dec, sym, balRaw] = await Promise.all([ nur.decimals(), nur.symbol(), nur.balanceOf(address) ]);
+      const [dec, sym, balRaw] = await Promise.all([nur.decimals(), nur.symbol(), nur.balanceOf(address)]);
       const nurBal = formatUnits(balRaw, dec);
 
-      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainIdHex = await eth.request({ method: "eth_chainId" });
       setWallet({
         connected: true,
         address,
@@ -165,63 +187,37 @@ function PayInner() {
         bnbBalance: bnbBal
       });
 
-      window.ethereum.on?.("accountsChanged", () => location.reload());
-      window.ethereum.on?.("chainChanged", () => location.reload());
-    } catch (e) {
+      eth.on?.("accountsChanged", () => location.reload());
+      eth.on?.("chainChanged", () => location.reload());
+    } catch {
       setErrMsg("Connexion refusée ou erreur wallet.");
     }
   };
 
-  const addBscToWallet = async () => {
-    if (typeof window === "undefined" || !window.ethereum) {
-      alert("Wallet non détecté (MetaMask/Rabby).");
-      return;
-    }
-    try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [{
-          chainId: BSC_CHAIN_ID_HEX,
-          chainName: "BNB Smart Chain",
-          nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
-          rpcUrls: [
-            "https://bsc-dataseed.binance.org",
-            "https://bsc-dataseed1.binance.org",
-            "https://bsc-dataseed2.binance.org",
-            "https://bsc-dataseed3.binance.org",
-            "https://bsc-dataseed4.binance.org"
-          ],
-          blockExplorerUrls: ["https://bscscan.com"]
-        }]
-      });
-    } catch {
-      alert("Impossible d'ajouter BSC au wallet.");
-    }
-  };
-
   const addNURToWallet = async () => {
-    if (typeof window === "undefined" || !window.ethereum) { alert("Wallet non détecté"); return; }
+    const eth = getInjectedEthereum();
+    if (!eth) { alert("Wallet non détecté."); return; }
     try {
-      await window.ethereum.request({
+      await eth.request({
         method: "wallet_watchAsset",
         params: { type: "ERC20", options: { address: NUR_CONTRACT, symbol: wallet.nurSymbol || "NUR", decimals: wallet.nurDecimals || 18 } }
       });
     } catch {/* ignore */}
   };
 
-  // Envoi direct (transfer ERC-20) — import dynamique d’ethers
   const sendNur = async () => {
     setErrMsg(""); setTxStatus("");
     try {
-      if (typeof window === "undefined" || !window.ethereum) { setErrMsg("Wallet non détecté."); return; }
+      const eth = getInjectedEthereum();
+      if (!eth) { setErrMsg("Wallet non détecté."); return; }
       const to = (recipient || "").trim();
       if (!to || !to.startsWith("0x") || to.length !== 42) { setErrMsg("Adresse destinataire invalide."); return; }
       if (!amount || Number(amount) <= 0) { setErrMsg("Montant invalide."); return; }
 
-      await ensureBsc(window.ethereum);
+      await ensureBsc(eth);
 
       const { BrowserProvider, Contract, parseUnits } = await import("ethers");
-      const provider = new BrowserProvider(window.ethereum);
+      const provider = new BrowserProvider(eth);
       const signer = await provider.getSigner();
       const ERC20_ABI = ["function transfer(address to, uint256 amount) returns (bool)"];
       const nur = new Contract(NUR_CONTRACT, ERC20_ABI, signer);
@@ -240,9 +236,7 @@ function PayInner() {
     }
   };
 
-  const copy = async (txt) => {
-    try { await navigator.clipboard.writeText(txt); alert("Copié !"); } catch {/* ignore */}
-  };
+  const copy = async (txt) => { try { await navigator.clipboard.writeText(txt); alert("Copié !"); } catch {} };
 
   return (
     <div className="space-y-10">
@@ -252,21 +246,28 @@ function PayInner() {
         <p className="mt-3 text-white/70 max-w-2xl mx-auto">
           QR : <span className="text-gold font-medium">Lien (HTTPS)</span> • <span className="text-gold font-medium">Universel (adresse)</span> • <span className="text-gold font-medium">Avancé (EIP-681)</span>. Ou <span className="text-gold font-medium">envoi direct</span> via wallet connecté.
         </p>
-        <div className="mt-6 flex items-center justify-center gap-3">
-          <button onClick={addBscToWallet} className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10">Ajouter BSC au wallet</button>
+        <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
           <button onClick={connectInjected} className="px-4 py-2 rounded-lg bg-gold text-black font-medium">Connecter le wallet</button>
-          {wallet.connected ? (
-            <button onClick={addNURToWallet} className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10">
-              Ajouter NUR au wallet
-            </button>
-          ) : null}
+          <button onClick={addNURToWallet} className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" disabled={!wallet.connected}>
+            Ajouter NUR au wallet
+          </button>
+          <button onClick={openInMetaMaskMobile} className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10">
+            Ouvrir dans MetaMask (mobile)
+          </button>
         </div>
         {wallet.connected ? (
           <div className="mt-3 text-sm text-white/70">
             <div>Connecté : <span className="font-mono">{short(wallet.address)}</span> • Réseau : {wallet.chainId}</div>
+            <div>Solde ~ {wallet.nurBalance ?? "—"} NUR • {wallet.bnbBalance ?? "—"} BNB</div>
           </div>
-        ) : null}
-        {errMsg ? <p className="mt-3 text-red-400 text-sm">{errMsg}</p> : null}
+        ) : (
+          errMsg ? <p className="mt-3 text-red-400 text-sm">{errMsg}</p> : null
+        )}
+        {!wallet.connected && (
+          <p className="text-xs text-white/50 mt-2">
+            Astuce : sur **mobile**, ouvre cette page dans le **navigateur interne** de MetaMask via le bouton ci-dessus.
+          </p>
+        )}
       </section>
 
       {/* FORM + QR + SEND */}
@@ -340,10 +341,9 @@ function PayInner() {
       <section className="border-t border-white/10 pt-8">
         <h3 className="text-xl font-semibold mb-2">Conseils</h3>
         <ul className="list-disc ml-5 space-y-2 text-white/75">
-          <li><strong>QR Lien (HTTPS)</strong> = le plus universel (ouvre /pay pré-remplie).</li>
-          <li><strong>QR Universel (adresse)</strong> = compatible 100% wallets (montant non pré-rempli).</li>
-          <li><strong>QR Avancé (EIP-681)</strong> = support partiel selon les wallets.</li>
-          <li>Pour l’envoi direct : connecte le wallet, assure-toi d’être sur <strong>BSC</strong> et d’avoir un peu de <strong>BNB</strong> (gas).</li>
+          <li><strong>Desktop :</strong> installe/active l’extension MetaMask (ou Rabby). Si plusieurs wallets, ce site choisit automatiquement MetaMask.</li>
+          <li><strong>Mobile :</strong> ouvre cette page dans le navigateur in-app de MetaMask via le bouton “Ouvrir dans MetaMask (mobile)”.</li>
+          <li>Assure-toi d’avoir un peu de <strong>BNB</strong> pour les frais réseau.</li>
         </ul>
       </section>
     </div>
