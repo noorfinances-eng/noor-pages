@@ -1,15 +1,16 @@
 // pages/pay.js
 import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 
 const NUR_CONTRACT = "0xA20212290866C8A804a89218c8572F28C507b401"; // NOORTokenV2
 const BSC_CHAIN_ID_DEC = 56;
 const BSC_CHAIN_ID_HEX = "0x38";
 
-export default function Pay() {
+function PayInner() {
   // Base URL + formulaire
   const [baseUrl, setBaseUrl] = useState("");
   const [recipient, setRecipient] = useState("");
-  const [amount, setAmount] = useState(""); // en NUR (décimaux humains)
+  const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
 
   // Type de QR
@@ -37,7 +38,6 @@ export default function Pay() {
     const [intPart, fracPart = ""] = String(numString).split(".");
     const frac = (fracPart + "000000000000000000").slice(0, 18);
     const joined = (intPart || "0") + frac;
-    // supprimer zéros en tête
     return joined.replace(/^0+(?=\d)/, "") || "0";
   };
 
@@ -56,14 +56,17 @@ export default function Pay() {
       recipient: (recipient || "").trim(),
       hint: { token: NUR_CONTRACT, amountNUR: amount || "" }
     };
-    return `${(recipient || "").trim()}\nMETA:${JSON.stringify(meta)}`;
+    const addr = (recipient || "").trim();
+    return (addr ? addr : "NOOR") + "\nMETA:" + JSON.stringify(meta);
   }, [recipient, amount]);
 
   // Lien partageable HTTPS → ouvre /pay prérempli
   const shareLink = useMemo(() => {
+    // ⚠️ IMPORTANT : pas de new URL tant que baseUrl n'est pas prêt côté client
+    if (!baseUrl) return "";
     const to = (recipient || "").trim();
     const amt = (amount || "").trim();
-    const u = new URL((baseUrl || "") + "/pay");
+    const u = new URL(baseUrl + "/pay");
     if (to) u.searchParams.set("to", to);
     if (amt) u.searchParams.set("amount", amt);
     u.hash = "open";
@@ -74,7 +77,7 @@ export default function Pay() {
   const qrContent = useMemo(() => {
     if (qrMode === "eip681") return eip681 || "NOOR";
     if (qrMode === "universal") return universalPayload || "NOOR";
-    return shareLink || "NOOR"; // link par défaut
+    return shareLink || "NOOR"; // "link" par défaut ; avant hydratation, c'est "NOOR"
   }, [qrMode, eip681, universalPayload, shareLink]);
 
   // Dessin du QR (client-only import de "qrcode")
@@ -90,7 +93,9 @@ export default function Pay() {
           margin: 2,
           scale: 6
         });
-      } catch {}
+      } catch {
+        // ignore
+      }
     })();
     return () => { mounted = false; };
   }, [qrContent]);
@@ -231,7 +236,7 @@ export default function Pay() {
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-2">
-            <button onClick={() => copy(shareLink)} className="px-3 py-2 rounded-lg border border-white/10 hover:bg-white/10 text-sm">
+            <button onClick={() => copy(shareLink)} className="px-3 py-2 rounded-lg border border-white/10 hover:bg-white/10 text-sm" disabled={!shareLink}>
               Copier le lien (HTTPS)
             </button>
             <button onClick={() => copy(eip681)} className="px-3 py-2 rounded-lg border border-white/10 hover:bg-white/10 text-sm" disabled={!eip681}>
@@ -245,15 +250,19 @@ export default function Pay() {
       <section className="border-t border-white/10 pt-8">
         <h3 className="text-xl font-semibold mb-2">Conseils</h3>
         <ul className="list-disc ml-5 space-y-2 text-white/75">
-          <li><strong>QR Lien (HTTPS)</strong> = le plus universel (toutes caméras ouvrent l’URL → ta page /pay pré-remplie → l’utilisateur envoie depuis son wallet).</li>
+          <li><strong>QR Lien (HTTPS)</strong> = le plus universel (ouvre la page /pay pré-remplie).</li>
           <li><strong>QR Universel (adresse)</strong> = compatible 100% wallets, mais montant non pré-rempli.</li>
-          <li><strong>QR Avancé (EIP-681)</strong> = marche sur certains wallets seulement.</li>
+          <li><strong>QR Avancé (EIP-681)</strong> = support partiel selon les wallets.</li>
           <li>Ajoute d’abord le réseau <strong>BSC</strong> à ton wallet si besoin (bouton en haut).</li>
         </ul>
       </section>
     </div>
   );
 }
+
+// Désactive le SSR pour cette page (évite les erreurs "new URL", "window", etc.)
+function Pay() { return <PayInner />; }
+export default dynamic(() => Promise.resolve(Pay), { ssr: false });
 
 function Row({ k, v, link }) {
   const body = <span className="font-mono">{v}</span>;
