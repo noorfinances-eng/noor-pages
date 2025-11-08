@@ -1,13 +1,13 @@
 // pages/merchant.js
 import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import AcceptNoor from "../components/AcceptNoor";
 
-const NUR_CONTRACT = "0xA20212290866C8A804a89218c8572F28C507b401"; // NOORTokenV2
+const NUR_CONTRACT = "0xA20212290866C8A804a89218c8572F28C507b401";
 const BSC_CHAIN_ID_DEC = 56;
 const BSC_CHAIN_ID_HEX = "0x38";
 
 function MerchantInner() {
-  // Merchant form
   const [merchantName, setMerchantName] = useState("");
   const [invoiceId, setInvoiceId] = useState("");
   const [customer, setCustomer] = useState("");
@@ -15,16 +15,12 @@ function MerchantInner() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
 
-  // QR mode
   const [qrMode, setQrMode] = useState("link"); // "link" | "universal" | "eip681"
-
-  // baseUrl for share links
   const [baseUrl, setBaseUrl] = useState("");
   const canvasRef = useRef(null);
 
   const short = (a) => (!a ? "—" : `${a.slice(0, 6)}…${a.slice(-4)}`);
 
-  // hydrate + URL prefill (?to=&amount=&inv=&m=)
   useEffect(() => {
     if (typeof window === "undefined") return;
     setBaseUrl(window.location.origin);
@@ -35,7 +31,6 @@ function MerchantInner() {
     const m = p.get("m");
     const desc = p.get("desc");
     const cust = p.get("cust");
-
     if (to && /^0x[0-9a-fA-F]{40}$/.test(to)) setRecipient(to);
     if (amt && !isNaN(Number(amt))) setAmount(amt);
     if (inv) setInvoiceId(inv.slice(0, 60));
@@ -44,7 +39,6 @@ function MerchantInner() {
     if (cust) setCustomer(cust.slice(0, 60));
   }, []);
 
-  // toWei (18 decimals) without deps
   const toWei = (numString) => {
     if (!numString || isNaN(Number(numString))) return "0";
     const [intPart, fracPart = ""] = String(numString).split(".");
@@ -53,27 +47,19 @@ function MerchantInner() {
     return joined.replace(/^0+(?=\d)/, "") || "0";
   };
 
-  // EIP-681 payload
   const eip681 = useMemo(() => {
     const to = (recipient || "").trim();
     if (!to || to.length !== 42 || !to.startsWith("0x")) return "";
     const wei = toWei(amount || "0");
-    // Note: certains wallets ignorent "chain_id". C’est un plus, pas essentiel.
     return `ethereum:${NUR_CONTRACT}/transfer?address=${to}&uint256=${wei}&chain_id=${BSC_CHAIN_ID_DEC}`;
   }, [recipient, amount]);
 
-  // Universal payload (address + META hint)
   const universalPayload = useMemo(() => {
-    const meta = {
-      chainId: BSC_CHAIN_ID_DEC,
-      recipient: (recipient || "").trim(),
-      hint: { token: NUR_CONTRACT, amountNUR: amount || "", invoiceId, merchantName, description, customer }
-    };
+    const meta = { chainId: BSC_CHAIN_ID_DEC, recipient: (recipient || "").trim(), hint: { token: NUR_CONTRACT, amountNUR: amount || "", invoiceId, merchantName, description, customer } };
     const addr = (recipient || "").trim();
     return (addr ? addr : "NOOR") + "\nMETA:" + JSON.stringify(meta);
   }, [recipient, amount, invoiceId, merchantName, description, customer]);
 
-  // Link to /pay prefilled (recommended UX)
   const payLink = useMemo(() => {
     if (!baseUrl) return "";
     const u = new URL(baseUrl + "/pay");
@@ -89,14 +75,12 @@ function MerchantInner() {
     return u.toString();
   }, [baseUrl, recipient, amount, invoiceId, merchantName, description, customer]);
 
-  // Current QR content
   const qrContent = useMemo(() => {
     if (qrMode === "eip681") return eip681 || "NOOR";
     if (qrMode === "universal") return universalPayload || "NOOR";
     return payLink || "NOOR";
   }, [qrMode, eip681, universalPayload, payLink]);
 
-  // Render QR (client-only)
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -112,7 +96,6 @@ function MerchantInner() {
 
   const copy = async (txt) => { try { await navigator.clipboard.writeText(txt); alert("Copié !"); } catch {} };
 
-  // Helper: add BSC to wallet (for merchants testing)
   const addBscToWallet = async () => {
     if (typeof window === "undefined" || !window.ethereum) { alert("Wallet non détecté (MetaMask/Rabby)."); return; }
     try {
@@ -135,14 +118,38 @@ function MerchantInner() {
     } catch { alert("Impossible d'ajouter BSC au wallet."); }
   };
 
+  // ---------- SNIPPET À COPIER (props injectées) ----------
+  const widgetSnippet = useMemo(() => {
+    const props = {
+      to: (recipient || "").trim(),
+      amount: (amount || "").trim(),
+      label: (merchantName ? `Pay ${merchantName} in NOOR` : "Pay with NOOR"),
+      note: description ? `${invoiceId ? invoiceId + " — " : ""}${description}` : (invoiceId || ""),
+      lang: "en",
+      mode: "link",
+      compact: true
+    };
+    const propStr = Object.entries(props)
+      .filter(([,v]) => v !== "" && v !== null && v !== undefined)
+      .map(([k,v]) => {
+        if (typeof v === "boolean") return `${k}={${v}}`;
+        return `${k}="${String(v).replace(/"/g, '&quot;')}"`;
+      })
+      .join(" ");
+    return [
+      `import AcceptNoor from "../components/AcceptNoor";`,
+      ``,
+      `<AcceptNoor ${propStr} />`
+    ].join("\n");
+  }, [recipient, amount, merchantName, description, invoiceId]);
+
   return (
     <div className="space-y-10">
       {/* HERO */}
       <section className="text-center">
         <h2 className="text-4xl md:text-5xl font-semibold">Merchant — Accept NOOR (NUR)</h2>
         <p className="mt-3 text-white/70 max-w-2xl mx-auto">
-          Génère un QR de paiement NOOR. Le client scanne → arrive sur <span className="text-gold font-medium">/pay</span> pré-rempli
-          (ou utilise un QR universel compatible 100% wallets).
+          Génère un QR de paiement et récupère un widget réutilisable « Accept NOOR » à coller sur n’importe quelle page de ton site.
         </p>
         <div className="mt-6">
           <button onClick={addBscToWallet} className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10">
@@ -175,7 +182,8 @@ function MerchantInner() {
             <div className="pt-2 border-t border-white/10" />
             <div>
               <label className="block text-sm text-white/60 mb-1">Adresse destinataire (wallet BSC du marchand)</label>
-              <input value={recipient} onChange={(e) => setRecipient(e.target.value)} placeholder="0x..." className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 focus:outline-none" />
+              <input value={recipient} onChange={(e) => setRecipient(e.target.value)} placeholder="0x..."
+                className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/10 focus:outline-none" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -202,8 +210,6 @@ function MerchantInner() {
         {/* QR + ACTIONS */}
         <div className="p-5 rounded-xl border border-white/10">
           <h3 className="text-xl font-semibold">2) QR de paiement</h3>
-
-          {/* Switch QR */}
           <div className="mt-3 inline-flex rounded-lg border border-white/10 overflow-hidden">
             <button onClick={() => setQrMode("link")} className={`px-3 py-2 text-sm ${qrMode === "link" ? "bg-white/10" : "hover:bg-white/5"}`}>QR Lien (HTTPS)</button>
             <button onClick={() => setQrMode("universal")} className={`px-3 py-2 text-sm ${qrMode === "universal" ? "bg-white/10" : "hover:bg-white/5"}`}>QR Universel (adresse)</button>
@@ -219,7 +225,6 @@ function MerchantInner() {
             </div>
           </div>
 
-          {/* Recap + actions */}
           <div className="mt-6 space-y-2 text-sm">
             <Row k="Marchand" v={merchantName || "—"} />
             <Row k="Facture" v={invoiceId || "—"} />
@@ -238,27 +243,44 @@ function MerchantInner() {
               Copier lien EIP-681
             </button>
           </div>
+        </div>
+      </section>
 
-          {/* Placeholder facture PDF — sera branché en 4C-3 */}
-          <div className="mt-4">
-            <button disabled className="w-full px-4 py-2 rounded-lg border border-white/10 text-white/40 cursor-not-allowed">
-              Générer facture PDF (4C-3)
-            </button>
-            <p className="mt-2 text-xs text-white/40">
-              À venir à l’étape 4C-3 : PDF local (marchand, client, items, montant, date, hash Tx).
-            </p>
-          </div>
+      {/* WIDGET PREVIEW + SNIPPET */}
+      <section className="border-t border-white/10 pt-8">
+        <h3 className="text-xl font-semibold mb-2">3) Widget « Accept NOOR » (à intégrer sur ton site)</h3>
+        <p className="text-white/70 mb-4">Aperçu ci-dessous (compact). Le snippet est généré selon tes champs ci-dessus.</p>
+
+        <div className="max-w-md">
+          <AcceptNoor
+            to={(recipient || "").trim()}
+            amount={(amount || "").trim()}
+            label={merchantName ? `Pay ${merchantName} in NOOR` : "Pay with NOOR"}
+            note={description ? `${invoiceId ? invoiceId + " — " : ""}${description}` : (invoiceId || "")}
+            lang="en"
+            mode="link"
+            compact
+          />
+        </div>
+
+        <div className="mt-6">
+          <h4 className="font-semibold mb-2">Snippet à coller (React/Next)</h4>
+          <pre className="whitespace-pre-wrap text-xs bg-black/40 border border-white/10 rounded-lg p-3">
+{widgetSnippet}
+          </pre>
+          <button onClick={() => copy(widgetSnippet)} className="mt-2 px-3 py-2 rounded-lg border border-white/10 hover:bg-white/10 text-sm">
+            Copier le snippet
+          </button>
         </div>
       </section>
 
       {/* NOTES */}
       <section className="border-t border-white/10 pt-8">
-        <h3 className="text-xl font-semibold mb-2">Comment utiliser</h3>
+        <h3 className="text-xl font-semibold mb-2">Conseils</h3>
         <ul className="list-disc ml-5 space-y-2 text-white/75">
-          <li>Remplis **Marchand**, **Facture**, **Adresse** et **Montant**.</li>
-          <li>Choisis **QR Lien (HTTPS)** pour un flux simple (ouvre la page /pay pré-remplie).</li>
-          <li>Pour MetaMask directement : **QR Universel (adresse)** (montant saisi par le client).</li>
-          <li>**EIP-681** : support partiel selon wallets.</li>
+          <li>Le widget utilise les mêmes QR (lien /pay par défaut) : universel et simple.</li>
+          <li>Tu peux passer <code>mode="universal"</code> si tu veux cibler le scanner QR des wallets directement.</li>
+          <li><code>compact</code> pour une intégration discrète (sidebar, footer…).</li>
         </ul>
       </section>
     </div>
@@ -275,9 +297,7 @@ function Row({ k, v, link }) {
     <div className="flex justify-between gap-4">
       <span className="text-white/50">{k}</span>
       {link ? (
-        <a href={link} target="_blank" rel="noreferrer" className="underline">
-          {body}
-        </a>
+        <a href={link} target="_blank" rel="noreferrer" className="underline">{body}</a>
       ) : body}
     </div>
   );
