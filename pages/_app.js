@@ -8,12 +8,13 @@ export default function MyApp({ Component, pageProps }) {
           <h1 className="text-2xl font-semibold">
             NOOR <span className="text-gold">/ NUR</span>
           </h1>
-          <nav className="flex gap-5 text-sm text-white/80 items-center">
+          <nav className="flex gap-5 text-sm text-white/80">
             <a href="/">Home</a>
             <a href="/en">EN</a>
             <a href="/de">DE</a>
             <a href="/fr">FR</a>
-            <a href="/pay" className="px-3 py-1 rounded-lg border border-white/10 hover:bg-white/10">Pay</a>
+            <a href="/pay">Pay</a>
+            <a href="/merchant">Merchant</a>
           </nav>
         </div>
       </header>
