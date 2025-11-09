@@ -22,8 +22,9 @@ export default function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
       </main>
       <footer className="mt-10 border-t border-white/10 py-6 text-center text-sm text-white/60">
-        © 2025 NOOR Project — Proof of Light
-      </footer>
+  © 2025 NOOR Project — Proof of Light · 
+  <a href="/legal" className="underline hover:text-white">Mentions légales</a>
+</footer>
     </div>
   );
 }
