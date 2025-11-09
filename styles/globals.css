@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === Google Fonts (propre et léger) === */
+/* === Google Fonts === */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap');
 
 /* === Thème global NOOR === */
@@ -11,96 +11,162 @@
   --night: #000000;
   --night-2: #0a0a0a;
   --gold: #ffd700;
-  --gold-soft: rgba(255, 215, 0, 0.12);
-  --gold-strong: rgba(255, 215, 0, 0.22);
+  --gold-soft: rgba(255, 215, 0, 0.14);
+  --gold-strong: rgba(255, 215, 0, 0.28);
+  --gold-core: rgba(255, 215, 0, 0.45);
 }
 
-html, body {
-  height: 100%;
-}
+html, body { height: 100%; }
 
 body {
-  background: radial-gradient(800px 500px at 50% 0%, #151515 0%, #0b0b0b 40%, #000000 75%);
+  background: radial-gradient(900px 600px at 50% 0%, #151515 0%, #0b0b0b 40%, #000000 80%);
   color: #fff;
   font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   line-height: 1.6;
   position: relative;
-  overflow-x: hidden; /* évite un scroll latéral pendant l’anim */
+  overflow-x: hidden;
 }
 
-/* Titres — plus premium */
+/* Titres — premium */
 h1, h2, h3 {
   font-family: 'Space Grotesk', 'Inter', sans-serif;
   letter-spacing: 0.4px;
 }
 
-/* === Effet LUMIÈRE TRAVERSANTE (beam) ===
-   Un large faisceau doré animé qui balaye l’écran en diagonale. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: -20% -50% -20% -50%; /* extra large pour couvrir pendant l’anim */
-  pointer-events: none;
-  background:
-    linear-gradient(
-      75deg,
-      transparent 0%,
-      transparent 35%,
-      rgba(255, 215, 0, 0.07) 45%,
-      rgba(255, 215, 0, 0.16) 50%,
-      rgba(255, 215, 0, 0.07) 55%,
-      transparent 65%,
-      transparent 100%
-    );
-  filter: blur(2px);
-  transform: translateX(-60%) rotate(12deg);
-  animation: sweepLight 6.5s ease-in-out infinite;
-  z-index: 0;
-  opacity: 0.9; /* plus visible */
-}
-
-/* === Halo central doré discret (renforce l’ambiance “Proof of Light”) === */
+/* === HALO CENTRAL renforcé === */
 body::after {
   content: "";
   position: fixed;
   left: 50%;
-  top: 8%;
-  width: 1100px;
-  height: 1100px;
+  top: 6%;
+  width: 1300px;
+  height: 1300px;
   transform: translateX(-50%);
   pointer-events: none;
   background: radial-gradient(
     ellipse at center,
-    var(--gold-soft) 0%,
-    rgba(255, 215, 0, 0.06) 35%,
-    rgba(255, 215, 0, 0.02) 60%,
-    transparent 75%
+    var(--gold-strong) 0%,
+    var(--gold-soft) 30%,
+    rgba(255, 215, 0, 0.06) 55%,
+    rgba(255, 215, 0, 0.02) 70%,
+    transparent 80%
   );
-  filter: blur(0.5px);
+  filter: blur(0.4px);
   z-index: 0;
 }
 
-/* Animation du faisceau */
-@keyframes sweepLight {
-  0%   { transform: translateX(-60%) rotate(12deg); opacity: 0.75; }
-  35%  { opacity: 0.95; }
-  50%  { transform: translateX(0%) rotate(12deg);  opacity: 1; }
-  65%  { opacity: 0.95; }
-  100% { transform: translateX(160%) rotate(12deg); opacity: 0.75; }
+/* === BEAM PRINCIPAL — plus large et plus lumineux === */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -25% -60% -25% -60%;
+  pointer-events: none;
+  /* cœur lumineux au centre du faisceau */
+  background:
+    linear-gradient(
+      74deg,
+      transparent 0%,
+      transparent 30%,
+      rgba(255, 215, 0, 0.09) 40%,
+      var(--gold-core) 50%,
+      rgba(255, 215, 0, 0.09) 60%,
+      transparent 70%,
+      transparent 100%
+    );
+  filter: blur(1.3px);
+  transform: translateX(-65%) rotate(12deg);
+  animation: sweepLight 5.6s ease-in-out infinite;
+  z-index: 0;
+  opacity: 0.95;
 }
 
-/* === Cartes vitrées (légère) === */
+/* === SECOND BEAM (parallèle plus fin) — donne de la profondeur === */
+.beam-overlay {
+  content: "";
+  position: fixed;
+  inset: -30% -70% -30% -70%;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      74deg,
+      transparent 0%,
+      transparent 44%,
+      rgba(255, 215, 0, 0.10) 48%,
+      rgba(255, 255, 255, 0.20) 50%,
+      rgba(255, 215, 0, 0.10) 52%,
+      transparent 56%,
+      transparent 100%
+    );
+  filter: blur(0.8px);
+  transform: translateX(-80%) rotate(12deg);
+  animation: sweepLight2 7.5s ease-in-out infinite;
+  z-index: 0;
+  opacity: 0.7;
+}
+@keyframes sweepLight {
+  0%   { transform: translateX(-65%) rotate(12deg); opacity: 0.85; }
+  35%  { opacity: 1; }
+  50%  { transform: translateX(5%) rotate(12deg);  opacity: 1; }
+  65%  { opacity: 1; }
+  100% { transform: translateX(175%) rotate(12deg); opacity: 0.9; }
+}
+@keyframes sweepLight2 {
+  0%   { transform: translateX(-80%) rotate(12deg); opacity: 0.65; }
+  40%  { opacity: 0.85; }
+  55%  { transform: translateX(10%) rotate(12deg); opacity: 0.9; }
+  80%  { opacity: 0.8; }
+  100% { transform: translateX(190%) rotate(12deg); opacity: 0.7; }
+}
+
+/* Injection du second faisceau via un pseudo-nœud attaché au body */
+body::marker { /* hack no-op pour éviter purge; ignoré par les navigateurs */ }
+html::before {
+  content: "";
+  display: block;
+  position: fixed;
+  z-index: 0;
+}
+html::after {
+  /* on ne peut pas créer un élément arbitraire, alors on simule en appliquant .beam-overlay via un layer utilitaire.
+     Ajoute ce style via JS si tu veux plus tard. Pour l’instant, on applique sur #__next pour garantir la présence. */
+}
+
+/* On applique le second faisceau sur le conteneur racine Next */
+#\__next::before {
+  content: "";
+  position: fixed;
+  inset: -30% -70% -30% -70%;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      74deg,
+      transparent 0%,
+      transparent 44%,
+      rgba(255, 215, 0, 0.10) 48%,
+      rgba(255, 255, 255, 0.22) 50%,
+      rgba(255, 215, 0, 0.10) 52%,
+      transparent 56%,
+      transparent 100%
+    );
+  filter: blur(0.9px);
+  transform: translateX(-80%) rotate(12deg);
+  animation: sweepLight2 7.5s ease-in-out infinite;
+  z-index: 0;
+  opacity: 0.7;
+}
+
+/* === Cartes vitrées === */
 .card {
   @apply rounded-2xl border border-white/10 p-6;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.035);
   backdrop-filter: blur(4px);
   transition: all 0.25s ease;
   position: relative;
-  z-index: 1; /* au-dessus des halos */
+  z-index: 1;
 }
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* === Bouton or premium === */
@@ -108,11 +174,11 @@ body::after {
   @apply px-4 py-2 rounded-lg font-medium transition-transform;
   background: linear-gradient(90deg, #ffd700 0%, #c5a200 100%);
   color: #000;
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.45);
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.55), inset 0 0 0 1px rgba(0,0,0,0.12);
 }
 .btn-gold:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 22px rgba(255, 215, 0, 0.7);
 }
 
 /* === Liens === */
@@ -123,7 +189,7 @@ a {
 }
 a:hover {
   color: var(--gold);
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 }
 
 /* === Apparition douce === */
@@ -133,7 +199,9 @@ a:hover {
 }
 .fade-in { animation: fadeInUp 0.6s ease forwards; }
 
-/* Utilitaires optionnels si besoin */
+/* === Utilitaire bordure lumineuse === */
 .glow-border {
-  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.25), 0 0 18px rgba(255, 215, 0, 0.35) inset;
+  box-shadow:
+    0 0 0 1px rgba(255, 215, 0, 0.28),
+    0 0 22px rgba(255, 215, 0, 0.35) inset;
 }
