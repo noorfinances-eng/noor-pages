@@ -90,8 +90,8 @@ export default function EN() {
             <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/merchant">
               Merchant Kit
             </a>
-            <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/docs/whitepaper.pdf">
-              Whitepaper (soon)
+            <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/docs/NOOR_Legal_Light_2025_FINAL.pdf" target="_blank" rel="noreferrer">
+              📄 Legal Light (PDF)
             </a>
             <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="https://github.com" target="_blank" rel="noreferrer">
               GitHub
