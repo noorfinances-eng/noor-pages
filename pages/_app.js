@@ -21,9 +21,17 @@ export default function MyApp({ Component, pageProps }) {
       <main className="max-w-6xl mx-auto px-4 py-10">
         <Component {...pageProps} />
       </main>
-      <footer className="mt-10 border-t border-white/10 py-6 text-center text-sm text-white/60">
-  © 2025 NOOR Project — Proof of Light · 
-  <a href="/legal" className="underline hover:text-white">Mentions légales</a>
+      <footer className="mt-10 border-t border-white/10 py-6 text-center text-sm text-white/60 space-y-1">
+  <p>© 2025 NOOR Project — Proof of Light</p>
+  <div className="flex justify-center gap-4 text-white/60 text-sm">
+    <a href="/legal" className="underline hover:text-white transition">FR</a>
+    <a href="/legal-en" className="underline hover:text-white transition">EN</a>
+    <a href="/legal-de" className="underline hover:text-white transition">DE</a>
+  </div>
+  <p>
+    Contact : <a href="mailto:noorfinances@gmail.com" className="underline hover:text-white">noorfinances@gmail.com</a> 
+    <span className="text-white/40"> (prochainement info@noortoken.com)</span>
+  </p>
 </footer>
     </div>
   );
