@@ -6,7 +6,7 @@ export default function PayLite() {
   const [amount, setAmount] = useState("");
   const [qr, setQr] = useState("");
   const [loading, setLoading] = useState(false);
-  const receiver = "0x2538398B396bd16370aFBDaF42D09e637a86C3AC"; // adresse fondatrice
+  const receiver = "0x2538398B396bd16370aFBDaF42D09e637a86C3AC"; // adresse fondateur
 
   const generateQr = async () => {
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) return;
@@ -50,6 +50,16 @@ export default function PayLite() {
           </p>
         </div>
       )}
+
+      {/* Bandeau d’aide */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/10 border border-white/20 backdrop-blur-md px-6 py-3 rounded-2xl text-sm text-white/80 max-w-md">
+        <p>
+          🛈 <strong>Comment payer ?</strong><br />
+          1️⃣ Ouvrez MetaMask (réseau : BSC).<br />
+          2️⃣ Scannez le QR ci-dessus.<br />
+          3️⃣ Confirmez le transfert : c’est tout !
+        </p>
+      </div>
     </div>
   );
 }
