@@ -1,15 +1,44 @@
 // pages/_app.js
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 import Head from "next/head";
 import "../styles/globals.css";
 
 export default function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Pages où l’on NE veut PAS d’halos ni de faisceaux
+    const noBeamPaths = [
+      "/legal", "/legal-en", "/legal-de",
+      "/compliance", "/compliance-en", "/compliance-de",
+      "/pay", "/merchant"
+    ];
+
+    const pathname = router.pathname;
+
+    const shouldDisableBeams =
+      noBeamPaths.includes(pathname) ||
+      noBeamPaths.some(p => pathname === p || pathname.startsWith(p + "/"));
+
+    if (shouldDisableBeams) {
+      document.body.classList.add("no-beam");
+    } else {
+      document.body.classList.remove("no-beam");
+    }
+
+    return () => {
+      document.body.classList.remove("no-beam");
+    };
+  }, [router.pathname]);
+
   return (
     <>
       <Head>
         <title>NOOR / NUR — Proof of Light</title>
         <meta
           name="description"
-          content="NOOR (NUR) — Swiss Utility + Payment Token built on BNB Smart Chain. Proof of Light: transparency, trust, and participation."
+          content="NOOR (NUR) — Swiss Utility + Payment Token on BNB Smart Chain. Proof of Light: transparency, trust, participation."
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -55,16 +84,10 @@ export default function MyApp({ Component, pageProps }) {
 
           <p>
             Contact :
-            <a
-              href="mailto:noorfinances@gmail.com"
-              className="underline hover:text-white ml-1"
-            >
+            <a href="mailto:noorfinances@gmail.com" className="underline hover:text-white ml-1">
               noorfinances@gmail.com
             </a>
-            <span className="text-white/40">
-              {" "}
-              (prochainement info@noortoken.com)
-            </span>
+            <span className="text-white/40"> (prochainement info@noortoken.com)</span>
           </p>
         </footer>
       </div>
