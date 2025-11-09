@@ -1,17 +1,65 @@
-/* Import de la police Inter (400-500-700) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-
-/* Base Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Thème global */
+/* === Global NOOR Theme === */
 :root {
   color-scheme: dark;
+  --color-night: #050505;
+  --color-gold: #ffd700;
+  --color-glow: rgba(255, 215, 0, 0.1);
 }
 
-/* Optionnel : améliore le rendu du texte */
 body {
-  @apply bg-night text-white font-sans antialiased;
+  background: radial-gradient(circle at 30% 10%, #111111 0%, #000000 80%);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+/* Titles use Space Grotesk */
+h1, h2, h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* Buttons */
+.btn-gold {
+  @apply px-4 py-2 rounded-lg font-medium transition-all;
+  background: linear-gradient(90deg, #FFD700 0%, #b89300 100%);
+  color: #000;
+  box-shadow: 0 0 10px rgba(255,215,0,0.4);
+}
+.btn-gold:hover {
+  box-shadow: 0 0 20px rgba(255,215,0,0.6);
+  transform: translateY(-1px);
+}
+
+/* Links and subtle hover */
+a {
+  transition: color 0.2s ease, text-shadow 0.3s ease;
+}
+a:hover {
+  color: var(--color-gold);
+  text-shadow: 0 0 8px var(--color-gold);
+}
+
+/* Card style */
+.card {
+  @apply rounded-2xl border border-white/10 p-6 backdrop-blur-sm;
+  background: rgba(255,255,255,0.03);
+  transition: all 0.3s ease;
+}
+.card:hover {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+}
+
+/* Subtle fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fadeIn 0.6s ease forwards;
 }
