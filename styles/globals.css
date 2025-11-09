@@ -2,64 +2,138 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === Global NOOR Theme === */
+/* === Google Fonts (propre et léger) === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+/* === Thème global NOOR === */
 :root {
   color-scheme: dark;
-  --color-night: #050505;
-  --color-gold: #ffd700;
-  --color-glow: rgba(255, 215, 0, 0.1);
+  --night: #000000;
+  --night-2: #0a0a0a;
+  --gold: #ffd700;
+  --gold-soft: rgba(255, 215, 0, 0.12);
+  --gold-strong: rgba(255, 215, 0, 0.22);
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
-  background: radial-gradient(circle at 30% 10%, #111111 0%, #000000 80%);
-  color: white;
-  font-family: 'Inter', sans-serif;
+  background: radial-gradient(800px 500px at 50% 0%, #151515 0%, #0b0b0b 40%, #000000 75%);
+  color: #fff;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   line-height: 1.6;
+  position: relative;
+  overflow-x: hidden; /* évite un scroll latéral pendant l’anim */
 }
 
-/* Titles use Space Grotesk */
+/* Titres — plus premium */
 h1, h2, h3 {
-  font-family: 'Space Grotesk', sans-serif;
-  letter-spacing: 0.5px;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: 0.4px;
 }
 
-/* Buttons */
-.btn-gold {
-  @apply px-4 py-2 rounded-lg font-medium transition-all;
-  background: linear-gradient(90deg, #FFD700 0%, #b89300 100%);
-  color: #000;
-  box-shadow: 0 0 10px rgba(255,215,0,0.4);
-}
-.btn-gold:hover {
-  box-shadow: 0 0 20px rgba(255,215,0,0.6);
-  transform: translateY(-1px);
+/* === Effet LUMIÈRE TRAVERSANTE (beam) ===
+   Un large faisceau doré animé qui balaye l’écran en diagonale. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20% -50% -20% -50%; /* extra large pour couvrir pendant l’anim */
+  pointer-events: none;
+  background:
+    linear-gradient(
+      75deg,
+      transparent 0%,
+      transparent 35%,
+      rgba(255, 215, 0, 0.07) 45%,
+      rgba(255, 215, 0, 0.16) 50%,
+      rgba(255, 215, 0, 0.07) 55%,
+      transparent 65%,
+      transparent 100%
+    );
+  filter: blur(2px);
+  transform: translateX(-60%) rotate(12deg);
+  animation: sweepLight 6.5s ease-in-out infinite;
+  z-index: 0;
+  opacity: 0.9; /* plus visible */
 }
 
-/* Links and subtle hover */
-a {
-  transition: color 0.2s ease, text-shadow 0.3s ease;
-}
-a:hover {
-  color: var(--color-gold);
-  text-shadow: 0 0 8px var(--color-gold);
+/* === Halo central doré discret (renforce l’ambiance “Proof of Light”) === */
+body::after {
+  content: "";
+  position: fixed;
+  left: 50%;
+  top: 8%;
+  width: 1100px;
+  height: 1100px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    var(--gold-soft) 0%,
+    rgba(255, 215, 0, 0.06) 35%,
+    rgba(255, 215, 0, 0.02) 60%,
+    transparent 75%
+  );
+  filter: blur(0.5px);
+  z-index: 0;
 }
 
-/* Card style */
+/* Animation du faisceau */
+@keyframes sweepLight {
+  0%   { transform: translateX(-60%) rotate(12deg); opacity: 0.75; }
+  35%  { opacity: 0.95; }
+  50%  { transform: translateX(0%) rotate(12deg);  opacity: 1; }
+  65%  { opacity: 0.95; }
+  100% { transform: translateX(160%) rotate(12deg); opacity: 0.75; }
+}
+
+/* === Cartes vitrées (légère) === */
 .card {
-  @apply rounded-2xl border border-white/10 p-6 backdrop-blur-sm;
-  background: rgba(255,255,255,0.03);
-  transition: all 0.3s ease;
+  @apply rounded-2xl border border-white/10 p-6;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(4px);
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 1; /* au-dessus des halos */
 }
 .card:hover {
-  border-color: rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.05);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-/* Subtle fade-in animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* === Bouton or premium === */
+.btn-gold {
+  @apply px-4 py-2 rounded-lg font-medium transition-transform;
+  background: linear-gradient(90deg, #ffd700 0%, #c5a200 100%);
+  color: #000;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.45);
 }
-.fade-in {
-  animation: fadeIn 0.6s ease forwards;
+.btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+/* === Liens === */
+a {
+  transition: color 0.15s ease, text-shadow 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+a:hover {
+  color: var(--gold);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+/* === Apparition douce === */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.6s ease forwards; }
+
+/* Utilitaires optionnels si besoin */
+.glow-border {
+  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.25), 0 0 18px rgba(255, 215, 0, 0.35) inset;
 }
