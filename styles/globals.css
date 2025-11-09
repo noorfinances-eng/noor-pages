@@ -61,7 +61,6 @@ body::before {
   position: fixed;
   inset: -25% -60% -25% -60%;
   pointer-events: none;
-  /* cœur lumineux au centre du faisceau */
   background:
     linear-gradient(
       74deg,
@@ -80,58 +79,7 @@ body::before {
   opacity: 0.95;
 }
 
-/* === SECOND BEAM (parallèle plus fin) — donne de la profondeur === */
-.beam-overlay {
-  content: "";
-  position: fixed;
-  inset: -30% -70% -30% -70%;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      74deg,
-      transparent 0%,
-      transparent 44%,
-      rgba(255, 215, 0, 0.10) 48%,
-      rgba(255, 255, 255, 0.20) 50%,
-      rgba(255, 215, 0, 0.10) 52%,
-      transparent 56%,
-      transparent 100%
-    );
-  filter: blur(0.8px);
-  transform: translateX(-80%) rotate(12deg);
-  animation: sweepLight2 7.5s ease-in-out infinite;
-  z-index: 0;
-  opacity: 0.7;
-}
-@keyframes sweepLight {
-  0%   { transform: translateX(-65%) rotate(12deg); opacity: 0.85; }
-  35%  { opacity: 1; }
-  50%  { transform: translateX(5%) rotate(12deg);  opacity: 1; }
-  65%  { opacity: 1; }
-  100% { transform: translateX(175%) rotate(12deg); opacity: 0.9; }
-}
-@keyframes sweepLight2 {
-  0%   { transform: translateX(-80%) rotate(12deg); opacity: 0.65; }
-  40%  { opacity: 0.85; }
-  55%  { transform: translateX(10%) rotate(12deg); opacity: 0.9; }
-  80%  { opacity: 0.8; }
-  100% { transform: translateX(190%) rotate(12deg); opacity: 0.7; }
-}
-
-/* Injection du second faisceau via un pseudo-nœud attaché au body */
-body::marker { /* hack no-op pour éviter purge; ignoré par les navigateurs */ }
-html::before {
-  content: "";
-  display: block;
-  position: fixed;
-  z-index: 0;
-}
-html::after {
-  /* on ne peut pas créer un élément arbitraire, alors on simule en appliquant .beam-overlay via un layer utilitaire.
-     Ajoute ce style via JS si tu veux plus tard. Pour l’instant, on applique sur #__next pour garantir la présence. */
-}
-
-/* On applique le second faisceau sur le conteneur racine Next */
+/* Second faisceau via #__next::before */
 #\__next::before {
   content: "";
   position: fixed;
@@ -153,6 +101,21 @@ html::after {
   animation: sweepLight2 7.5s ease-in-out infinite;
   z-index: 0;
   opacity: 0.7;
+}
+
+@keyframes sweepLight {
+  0%   { transform: translateX(-65%) rotate(12deg); opacity: 0.85; }
+  35%  { opacity: 1; }
+  50%  { transform: translateX(5%) rotate(12deg);  opacity: 1; }
+  65%  { opacity: 1; }
+  100% { transform: translateX(175%) rotate(12deg); opacity: 0.9; }
+}
+@keyframes sweepLight2 {
+  0%   { transform: translateX(-80%) rotate(12deg); opacity: 0.65; }
+  40%  { opacity: 0.85; }
+  55%  { transform: translateX(10%) rotate(12deg); opacity: 0.9; }
+  80%  { opacity: 0.8; }
+  100% { transform: translateX(190%) rotate(12deg); opacity: 0.7; }
 }
 
 /* === Cartes vitrées === */
@@ -204,4 +167,13 @@ a:hover {
   box-shadow:
     0 0 0 1px rgba(255, 215, 0, 0.28),
     0 0 22px rgba(255, 215, 0, 0.35) inset;
+}
+
+/* === MODE LECTURE : couper les beams/halo sur certaines pages === */
+body.no-beam::before,
+body.no-beam::after,
+body.no-beam #\__next::before {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
 }
