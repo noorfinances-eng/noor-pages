@@ -18,7 +18,7 @@ export default function PayLite() {
   };
 
   return (
-    <div className="text-center space-y-10">
+    <div className="text-center space-y-10 relative">
       <h2 className="text-4xl font-semibold">💡 Payer avec NOOR (NUR)</h2>
       <p className="text-white/70 max-w-lg mx-auto">
         Entrez un montant en NUR, cliquez sur <strong>Générer QR</strong>, puis scannez avec MetaMask.
@@ -51,13 +51,13 @@ export default function PayLite() {
         </div>
       )}
 
-      {/* Bandeau d’aide */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/10 border border-white/20 backdrop-blur-md px-6 py-3 rounded-2xl text-sm text-white/80 max-w-md">
+      {/* ✅ Bulle latérale (droite) */}
+      <div className="fixed right-4 bottom-20 bg-white/10 border border-white/20 backdrop-blur-md px-5 py-3 rounded-2xl text-sm text-white/80 w-64 shadow-lg">
         <p>
           🛈 <strong>Comment payer ?</strong><br />
-          1️⃣ Ouvrez MetaMask (réseau : BSC).<br />
-          2️⃣ Scannez le QR ci-dessus.<br />
-          3️⃣ Confirmez le transfert : c’est tout !
+          1️⃣ Ouvrez MetaMask (BSC).<br />
+          2️⃣ Scannez le QR.<br />
+          3️⃣ Confirmez le transfert.
         </p>
       </div>
     </div>
