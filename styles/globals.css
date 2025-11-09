@@ -2,10 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === Google Fonts === */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap');
-
-/* === Thème global NOOR === */
+/* === Thème global NOOR — Proof of Light === */
 :root {
   color-scheme: dark;
   --night: #000000;
@@ -16,7 +13,11 @@
   --gold-core: rgba(255, 215, 0, 0.45);
 }
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
 body {
   background: radial-gradient(900px 600px at 50% 0%, #151515 0%, #0b0b0b 40%, #000000 80%);
@@ -27,13 +28,13 @@ body {
   overflow-x: hidden;
 }
 
-/* Titres — premium */
+/* === Titres === */
 h1, h2, h3 {
   font-family: 'Space Grotesk', 'Inter', sans-serif;
   letter-spacing: 0.4px;
 }
 
-/* === HALO CENTRAL renforcé === */
+/* === HALO CENTRAL === */
 body::after {
   content: "";
   position: fixed;
@@ -55,14 +56,13 @@ body::after {
   z-index: 0;
 }
 
-/* === BEAM PRINCIPAL — plus large et plus lumineux === */
+/* === BEAM PRINCIPAL === */
 body::before {
   content: "";
   position: fixed;
   inset: -25% -60% -25% -60%;
   pointer-events: none;
-  background:
-    linear-gradient(
+  background: linear-gradient(
       74deg,
       transparent 0%,
       transparent 30%,
@@ -71,7 +71,7 @@ body::before {
       rgba(255, 215, 0, 0.09) 60%,
       transparent 70%,
       transparent 100%
-    );
+  );
   filter: blur(1.3px);
   transform: translateX(-65%) rotate(12deg);
   animation: sweepLight 5.6s ease-in-out infinite;
@@ -79,14 +79,13 @@ body::before {
   opacity: 0.95;
 }
 
-/* Second faisceau via #__next::before */
+/* === SECOND BEAM === */
 #\__next::before {
   content: "";
   position: fixed;
   inset: -30% -70% -30% -70%;
   pointer-events: none;
-  background:
-    linear-gradient(
+  background: linear-gradient(
       74deg,
       transparent 0%,
       transparent 44%,
@@ -95,7 +94,7 @@ body::before {
       rgba(255, 215, 0, 0.10) 52%,
       transparent 56%,
       transparent 100%
-    );
+  );
   filter: blur(0.9px);
   transform: translateX(-80%) rotate(12deg);
   animation: sweepLight2 7.5s ease-in-out infinite;
@@ -103,22 +102,24 @@ body::before {
   opacity: 0.7;
 }
 
+/* === ANIMATIONS === */
 @keyframes sweepLight {
-  0%   { transform: translateX(-65%) rotate(12deg); opacity: 0.85; }
-  35%  { opacity: 1; }
-  50%  { transform: translateX(5%) rotate(12deg);  opacity: 1; }
-  65%  { opacity: 1; }
+  0% { transform: translateX(-65%) rotate(12deg); opacity: 0.85; }
+  35% { opacity: 1; }
+  50% { transform: translateX(5%) rotate(12deg); opacity: 1; }
+  65% { opacity: 1; }
   100% { transform: translateX(175%) rotate(12deg); opacity: 0.9; }
 }
+
 @keyframes sweepLight2 {
-  0%   { transform: translateX(-80%) rotate(12deg); opacity: 0.65; }
-  40%  { opacity: 0.85; }
-  55%  { transform: translateX(10%) rotate(12deg); opacity: 0.9; }
-  80%  { opacity: 0.8; }
+  0% { transform: translateX(-80%) rotate(12deg); opacity: 0.65; }
+  40% { opacity: 0.85; }
+  55% { transform: translateX(10%) rotate(12deg); opacity: 0.9; }
+  80% { opacity: 0.8; }
   100% { transform: translateX(190%) rotate(12deg); opacity: 0.7; }
 }
 
-/* === Cartes vitrées === */
+/* === CARTES VITRÉES === */
 .card {
   @apply rounded-2xl border border-white/10 p-6;
   background: rgba(255, 255, 255, 0.035);
@@ -132,7 +133,7 @@ body::before {
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* === Bouton or premium === */
+/* === BOUTONS OR === */
 .btn-gold {
   @apply px-4 py-2 rounded-lg font-medium transition-transform;
   background: linear-gradient(90deg, #ffd700 0%, #c5a200 100%);
@@ -144,7 +145,7 @@ body::before {
   box-shadow: 0 0 22px rgba(255, 215, 0, 0.7);
 }
 
-/* === Liens === */
+/* === LIENS === */
 a {
   transition: color 0.15s ease, text-shadow 0.3s ease;
   position: relative;
@@ -155,24 +156,23 @@ a:hover {
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 }
 
-/* === Apparition douce === */
+/* === APPARITION DOUCE === */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .fade-in { animation: fadeInUp 0.6s ease forwards; }
 
-/* === Utilitaire bordure lumineuse === */
+/* === UTILITAIRE BORDURE LUMINEUSE === */
 .glow-border {
-  box-shadow:
-    0 0 0 1px rgba(255, 215, 0, 0.28),
-    0 0 22px rgba(255, 215, 0, 0.35) inset;
+  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.28),
+              0 0 22px rgba(255, 215, 0, 0.35) inset;
 }
 
 /* === MODE LECTURE : couper les beams/halo sur certaines pages === */
 body.no-beam::before,
 body.no-beam::after,
-body.no-beam #\__next::before {
+body.no-beam #__next::before {
   content: none !important;
   display: none !important;
   animation: none !important;
