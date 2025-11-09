@@ -73,15 +73,15 @@ export default function FR() {
       <section id="docs" className="border-t border-white/10 pt-12">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl md:text-3xl font-semibold">Docs & Whitepaper</h3>
-        <div className="mt-4 flex gap-3 justify-center">
+          <div className="mt-4 flex gap-3 justify-center">
             <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/pay">
               Pay with NOOR
             </a>
             <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/merchant">
               Merchant Kit
             </a>
-            <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/docs/whitepaper.pdf">
-              Whitepaper (bientôt)
+            <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="/docs/NOOR_Legal_Light_2025_FINAL.pdf" target="_blank" rel="noreferrer">
+              📄 Legal Light (PDF)
             </a>
             <a className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10" href="https://github.com" target="_blank" rel="noreferrer">
               GitHub
