@@ -2,11 +2,43 @@
 import { useState } from "react";
 import QRCode from "qrcode";
 
+const TOKEN_ADDRESS = "0xA20212290866C8A804a89218c8572F28C507b401";
+const CHAIN_ID_HEX = "0x38";
+
 export default function PayLiteEN() {
   const [amount, setAmount] = useState("");
   const [qr, setQr] = useState("");
   const [loading, setLoading] = useState(false);
-  const receiver = "0x2538398B396bd16370aFBDaF42D09e637a86C3AC"; // founder wallet
+  const receiver = "0x2538398B396bd16370aFBDaF42D09e637a86C3AC";
+
+  async function addBSC() {
+    try {
+      if (!window.ethereum) throw new Error("No wallet detected.");
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainId: CHAIN_ID_HEX,
+          chainName: "BNB Smart Chain",
+          nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+          rpcUrls: ["https://bsc-dataseed.binance.org/"],
+          blockExplorerUrls: ["https://bscscan.com"],
+        }],
+      });
+    } catch (e) { alert(e.message || e); }
+  }
+
+  async function addNUR() {
+    try {
+      if (!window.ethereum) throw new Error("No wallet detected.");
+      await window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: { address: TOKEN_ADDRESS, symbol: "NUR", decimals: 18 },
+        },
+      });
+    } catch (e) { alert(e.message || e); }
+  }
 
   const generateQr = async () => {
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) return;
@@ -23,6 +55,11 @@ export default function PayLiteEN() {
       <p className="text-white/70 max-w-lg mx-auto">
         Enter an amount in NUR, click <strong>Generate QR</strong>, then scan with MetaMask.
       </p>
+
+      <div className="flex items-center justify-center gap-3">
+        <button onClick={addBSC} className="btn-gold">➕ Add BSC (56)</button>
+        <button onClick={addNUR} className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10">➕ Add NUR</button>
+      </div>
 
       <div className="flex flex-col items-center gap-4">
         <input
