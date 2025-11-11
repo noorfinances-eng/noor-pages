@@ -1,101 +1,155 @@
 // pages/pay-en.js
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 
-const TOKEN_ADDRESS = "0xA20212290866C8A804a89218c8572F28C507b401";
-const CHAIN_ID_HEX = "0x38";
+const DEST = "0x2538398B396bd16370aFBDaF42D09e637a86C3AC"; // NOOR receive address
+const NUR_TOKEN = "0xA20212290866C8A804a89218c8572F28C507b401"; // NOOR (NUR) on BSC
+const CHAIN_ID_HEX = "0x38"; // 56
 
-export default function PayLiteEN() {
-  const [amount, setAmount] = useState("");
+const BSC_PARAMS = {
+  chainId: CHAIN_ID_HEX,
+  chainName: "BNB Smart Chain",
+  nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+  rpcUrls: ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.binance.org"],
+  blockExplorerUrls: ["https://bscscan.com"],
+};
+
+function short(a) {
+  if (!a || a.length < 12) return a || "";
+  return `${a.slice(0, 6)}…${a.slice(-4)}`;
+}
+
+export default function PaySimpleEN() {
+  const [address, setAddress] = useState(DEST);
   const [qr, setQr] = useState("");
-  const [loading, setLoading] = useState(false);
-  const receiver = "0x2538398B396bd16370aFBDaF42D09e637a86C3AC";
+
+  useEffect(() => {
+    async function gen() {
+      try {
+        if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) {
+          setQr("");
+          return;
+        }
+        const dataUrl = await QRCode.toDataURL(address, { margin: 1, scale: 6 });
+        setQr(dataUrl);
+      } catch {
+        setQr("");
+      }
+    }
+    gen();
+  }, [address]);
+
+  function copy(txt) {
+    navigator.clipboard?.writeText(txt).then(() => alert("Copied!"));
+  }
 
   async function addBSC() {
+    if (!window?.ethereum) return alert("Open this page in MetaMask (mobile) or install MetaMask.");
     try {
-      if (!window.ethereum) throw new Error("No wallet detected.");
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [{
-          chainId: CHAIN_ID_HEX,
-          chainName: "BNB Smart Chain",
-          nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
-          rpcUrls: ["https://bsc-dataseed.binance.org/"],
-          blockExplorerUrls: ["https://bscscan.com"],
-        }],
-      });
-    } catch (e) { alert(e.message || e); }
+      await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_ID_HEX }] });
+      alert("BNB Smart Chain activated.");
+    } catch {
+      await window.ethereum.request({ method: "wallet_addEthereumChain", params: [BSC_PARAMS] });
+      alert("BNB Smart Chain added.");
+    }
   }
 
   async function addNUR() {
+    if (!window?.ethereum) return alert("Open this page in MetaMask (mobile) or install MetaMask.");
     try {
-      if (!window.ethereum) throw new Error("No wallet detected.");
-      await window.ethereum.request({
+      const ok = await window.ethereum.request({
         method: "wallet_watchAsset",
-        params: {
-          type: "ERC20",
-          options: { address: TOKEN_ADDRESS, symbol: "NUR", decimals: 18 },
-        },
+        params: { type: "ERC20", options: { address: NUR_TOKEN, symbol: "NUR", decimals: 18 } },
       });
-    } catch (e) { alert(e.message || e); }
+      if (ok) alert("NUR token added to your wallet.");
+    } catch {
+      alert("Unable to add NUR automatically. You can add it manually.");
+    }
   }
 
-  const generateQr = async () => {
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) return;
-    setLoading(true);
-    const url = `ethereum:${receiver}?chain_id=56&value=${amount}`;
-    const dataUrl = await QRCode.toDataURL(url);
-    setQr(dataUrl);
-    setLoading(false);
-  };
-
   return (
-    <div className="text-center space-y-10 relative">
-      <h2 className="text-4xl font-semibold">💡 Pay with NOOR (NUR)</h2>
-      <p className="text-white/70 max-w-lg mx-auto">
-        Enter an amount in NUR, click <strong>Generate QR</strong>, then scan with MetaMask.
+    <div className="max-w-xl mx-auto">
+      <h1 className="text-3xl font-semibold mb-1">Pay — NOOR (Lite Version)</h1>
+      <p className="text-white/60 mb-6">
+        Scan the QR code below with your wallet. <b>You choose the asset (BNB, NUR, etc.) and the amount directly in your app.</b>
       </p>
 
-      <div className="flex items-center justify-center gap-3">
-        <button onClick={addBSC} className="btn-gold">➕ Add BSC (56)</button>
-        <button onClick={addNUR} className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10">➕ Add NUR</button>
-      </div>
-
-      <div className="flex flex-col items-center gap-4">
-        <input
-          type="number"
-          placeholder="Amount (NUR)"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="px-4 py-2 rounded-lg text-black w-60 text-center"
-        />
-        <button
-          onClick={generateQr}
-          disabled={loading}
-          className="px-6 py-2 rounded-lg bg-gold text-black font-semibold hover:opacity-90 disabled:opacity-50"
-        >
-          {loading ? "Creating..." : "Generate QR"}
-        </button>
-      </div>
-
-      {qr && (
-        <div className="mt-8">
-          <p className="text-white/70 mb-3">Scan this code with MetaMask:</p>
-          <img src={qr} alt="NOOR QR" className="mx-auto w-48 h-48" />
-          <p className="text-xs text-white/50 mt-2">
-            Address: {receiver.slice(0, 6)}...{receiver.slice(-4)} — Network: BSC (56)
-          </p>
+      {/* QR + Address */}
+      <div className="p-4 rounded-xl border border-white/10">
+        <div className="text-sm text-white/60 mb-2">Receiving address</div>
+        <div className="flex items-center gap-3">
+          <input
+            className="w-full rounded-xl bg-black/40 border border-white/10 px-3 py-2"
+            value={address}
+            onChange={(e) => setAddress(e.target.value.trim())}
+            placeholder="0x…"
+          />
+          <button onClick={() => copy(address)} className="px-3 py-2 rounded-lg border border-white/15 hover:bg-white/10">
+            Copy
+          </button>
         </div>
-      )}
 
-      {/* Help bubble (side) */}
-      <div className="fixed right-4 bottom-20 bg-white/10 border border-white/20 backdrop-blur-md px-5 py-3 rounded-2xl text-sm text-white/80 w-64 shadow-lg">
-        <p>
-          🛈 <strong>How to pay?</strong><br />
-          1️⃣ Open MetaMask (BSC).<br />
-          2️⃣ Scan the QR.<br />
-          3️⃣ Confirm the transfer.
-        </p>
+        <div className="mt-4 flex flex-col items-center">
+          {qr ? (
+            <>
+              <img src={qr} alt="QR address" className="w-56 h-56 rounded-lg border border-white/10" />
+              <p className="text-xs text-white/40 mt-2">
+                Open your wallet (MetaMask, Trust, Rabby…) → <b>Scanner</b> → choose asset & amount.
+              </p>
+            </>
+          ) : (
+            <div className="text-sm text-white/60">Enter a valid address (0x…)</div>
+          )}
+        </div>
+      </div>
+
+      {/* Help */}
+      <div className="mt-6 grid gap-4">
+        <div className="p-4 rounded-xl border border-white/10">
+          <div className="font-semibold">💡 Connect to BNB Smart Chain (chainId 56)</div>
+          <p className="text-sm text-white/70 mt-1">
+            If your wallet isn’t on BNB Smart Chain, click here to add or switch automatically.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button onClick={addBSC} className="px-4 py-2 rounded-lg border border-white/15 hover:bg-white/10">
+              Add / switch to BSC (56)
+            </button>
+            <a href="https://bscscan.com" target="_blank" rel="noreferrer" className="px-4 py-2 rounded-lg border border-white/15 hover:bg-white/10">
+              Open BscScan
+            </a>
+          </div>
+          <ul className="mt-3 text-xs text-white/50 list-disc pl-5 space-y-1">
+            <li>Network must show <b>BNB Smart Chain (Mainnet)</b>.</li>
+            <li>You need a little <b>BNB</b> for fees (e.g., 0.002).</li>
+          </ul>
+        </div>
+
+        <div className="p-4 rounded-xl border border-white/10">
+          <div className="font-semibold">🪙 Add NUR token</div>
+          <p className="text-sm text-white/70 mt-1">To view and send NUR easily, add the token contract to your wallet.</p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button onClick={addNUR} className="px-4 py-2 rounded-lg border border-white/15 hover:bg-white/10">
+              Add NUR automatically
+            </button>
+            <button onClick={() => copy(NUR_TOKEN)} className="px-4 py-2 rounded-lg border border-white/15 hover:bg-white/10">
+              Copy NUR address
+            </button>
+          </div>
+          <ul className="mt-3 text-xs text-white/50 list-disc pl-5 space-y-1">
+            <li>NUR address: <span className="font-mono">{short(NUR_TOKEN)}</span> (18 decimals)</li>
+            <li>Network: <b>BNB Smart Chain (56)</b></li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Tips */}
+      <div className="mt-6 p-4 rounded-xl border border-white/10">
+        <div className="font-semibold mb-1">Usage tips</div>
+        <ul className="text-sm text-white/70 list-disc pl-5 space-y-1">
+          <li>The QR contains <b>only the address</b>. Choose <b>asset</b> and <b>amount</b> inside your wallet.</li>
+          <li>For <b>NUR</b> transfers, add the token first.</li>
+          <li>If you see “network not found”, use <b>Add / switch to BSC (56)</b>.</li>
+        </ul>
       </div>
     </div>
   );
