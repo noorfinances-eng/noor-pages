@@ -22,7 +22,22 @@ export default function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
       </main>
 
+      {/* 🟡 Footer mis à jour avec lien Docs */}
       <footer className="mt-10 border-t border-white/10 py-6 text-center text-sm text-white/60">
+        <div className="flex justify-center gap-6 mb-3">
+          <a href="/legal" className="hover:text-yellow-300 transition-colors">
+            Legal
+          </a>
+          <a href="/compliance" className="hover:text-yellow-300 transition-colors">
+            Compliance
+          </a>
+          <a href="/merchant" className="hover:text-yellow-300 transition-colors">
+            Merchant
+          </a>
+          <a href="/docs" className="hover:text-yellow-300 transition-colors">
+            Docs
+          </a>
+        </div>
         © 2025 NOOR Project — Proof of Light
       </footer>
     </div>
