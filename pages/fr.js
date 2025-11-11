@@ -8,9 +8,9 @@ export default function FR() {
       <section className="relative py-16 md:py-24 text-center">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff10,transparent_60%)]" />
         <div className="relative">
-          <h2 className="text-4xl md:text-5xl font-semibold">NOOR — La lumière de la transparence crypto</h2>
+          <h2 className="text-4xl md:text-5xl font-semibold">NOOR — La lumière de la valeur</h2>
           <p className="mt-4 text-white/70 max-w-2xl mx-auto">
-            NUR récompense la participation, la clarté et la confiance. Pas de minage — seulement la lumière.
+            On ne mine pas la puissance — on mine la clarté. NUR récompense la participation, la transparence et la confiance.
           </p>
           <div className="mt-8 flex flex-wrap gap-4 justify-center">
             <a className="px-4 py-2 rounded-lg bg-gold text-black font-medium" href={`https://bscscan.com/address/${CONTRACT}`} target="_blank" rel="noreferrer">
