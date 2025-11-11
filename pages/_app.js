@@ -22,7 +22,7 @@ export default function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
       </main>
 
-      {/* 🟡 Footer mis à jour avec lien Docs */}
+      {/* 🟡 Footer mis à jour avec email professionnel */}
       <footer className="mt-10 border-t border-white/10 py-6 text-center text-sm text-white/60">
         <div className="flex justify-center gap-6 mb-3">
           <a href="/legal" className="hover:text-yellow-300 transition-colors">
@@ -38,7 +38,18 @@ export default function MyApp({ Component, pageProps }) {
             Docs
           </a>
         </div>
-        © 2025 NOOR Project — Proof of Light
+        <p>
+          Contact:{" "}
+          <a
+            href="mailto:info@noortoken.com"
+            className="text-yellow-300 hover:text-yellow-200 underline underline-offset-2"
+          >
+            info@noortoken.com
+          </a>
+        </p>
+        <p className="mt-3 text-xs text-neutral-600">
+          © 2025 NOOR Project — Proof of Light
+        </p>
       </footer>
     </div>
   );
